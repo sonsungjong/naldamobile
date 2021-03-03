@@ -1,0 +1,234 @@
+<resources>
+    <string name="app_name">MyApp</string>
+    <string name="one">One</string>
+    <string name="two">Two</string>
+    <string name="three">Three</string>
+    <string name="four">Four</string>
+    <string name="five">Five</string>
+    <string name="six">Six</string>
+    <string name="seven">Seven</string>
+    <string name="eight">Eight</string>
+    <string name="nine">Nine</string>
+    <string name="ten">Ten</string>
+
+    <string-array name="seoul_shopname">
+        <item>서울카페1</item>
+        <item>서울카페2</item>
+        <item>서울카페3</item>
+        <item>서울카페4</item>
+        <item>서울카페5</item>
+        <item>서울카페6</item>
+    </string-array>
+
+    <string-array name="seoul_address1">
+        <item>서울특별시</item>
+        <item>서울특별시</item>
+        <item>서울특별시</item>
+        <item>서울특별시</item>
+        <item>서울특별시</item>
+        <item>서울특별시</item>
+    </string-array>
+
+    <string-array name="seoul_address2">
+        <item>용산구 한강대로 405</item>
+        <item>강남구 강남대로 396</item>
+        <item>마포구 마포대로 33</item>
+        <item>종로 2가 6 종로타워</item>
+        <item>신길동 252-9 1,2층</item>
+        <item>영등포구 영등대로 11</item>
+    </string-array>
+
+    <string-array name="seoul_order_text">
+        <item>주문 가능 |</item>
+        <item>주문 가능 |</item>
+        <item>주문 가능 |</item>
+        <item>주문 가능 |</item>
+        <item>주문 가능 |</item>
+        <item>주문 불가능 |</item>
+    </string-array>
+
+    <string-array name="seoul_reserve_text">
+        <item>| 예약 가능</item>
+        <item>| 예약 가능</item>
+        <item>| 예약 가능</item>
+        <item>| 예약 가능</item>
+        <item>| 예약 가능</item>
+        <item>| 예약 불가능</item>
+    </string-array>
+
+    <string-array name="gyeonggi_shopname">
+        <item>경기카페1</item>
+        <item>경기카페2</item>
+        <item>경기카페3</item>
+        <item>경기카페4</item>
+        <item>군포점</item>
+    </string-array>
+
+    <string-array name="gyeonggi_address1">
+        <item>경기도</item>
+        <item>경기도</item>
+        <item>경기도</item>
+        <item>경기도</item>
+        <item>경기도</item>
+    </string-array>
+
+    <string-array name="gyeonggi_address2">
+        <item>군포시 군포첨단산업2로 22번길 5</item>
+        <item>안양시 동안구 관악대로 450</item>
+        <item>삼동 470-10</item>
+        <item>군포시 군포첨단산업1로 33번길 1</item>
+        <item>삼동 113-6 1,2층</item>
+    </string-array>
+
+    <string-array name="gyeonggi_order_text">
+        <item>주문 가능 |</item>
+        <item>주문 가능 |</item>
+        <item>주문 가능 |</item>
+        <item>주문 가능 |</item>
+        <item>주문 가능 |</item>
+    </string-array>
+
+    <string-array name="gyeonggi_reserve_text">
+        <item>| 예약 가능</item>
+        <item>| 예약 가능</item>
+        <item>| 예약 가능</item>
+        <item>| 예약 가능</item>
+        <item>| 예약 가능</item>
+    </string-array>
+
+    <string-array name="incheon_shopname">
+        <item>인천카페1</item>
+        <item>인천카페2</item>
+        <item>인천카페3</item>
+        <item>인천카페4</item>
+        <item>인천카페5</item>
+        <item>인천카페6</item>
+    </string-array>
+
+    <string-array name="incheon_address1">
+        <item>인천광역시</item>
+        <item>인천광역시</item>
+        <item>인천광역시</item>
+        <item>인천광역시</item>
+        <item>인천광역시</item>
+        <item>인천광역시</item>
+    </string-array>
+
+    <string-array name="incheon_address2">
+        <item>부평구 십정동 33-1</item>
+        <item>연수구 동춘3동 930-1</item>
+        <item>서구 원적로 125</item>
+        <item>미추홀구 예술로 67</item>
+        <item>부평구 십정동 391-5 2층</item>
+        <item>미추홀구 예술로 85</item>
+    </string-array>
+
+    <string-array name="incheon_order_text">
+        <item>주문 가능 |</item>
+        <item>주문 가능 |</item>
+        <item>주문 가능 |</item>
+        <item>주문 불가능 |</item>
+        <item>주문 가능 |</item>
+        <item>주문 불가능 |</item>
+    </string-array>
+
+    <string-array name="incheon_reserve_text">
+        <item>| 예약 가능</item>
+        <item>| 예약 불가능</item>
+        <item>| 예약 가능</item>
+        <item>| 예약 불가능</item>
+        <item>| 예약 가능</item>
+        <item>| 예약 불가능</item>
+    </string-array>
+
+    <string-array name="busan_shopname">
+        <item>부산카페1</item>
+        <item>부산카페2</item>
+        <item>부산카페3</item>
+        <item>부산카페4</item>
+        <item>부산카페5</item>
+        <item>부산카페6</item>
+    </string-array>
+
+    <string-array name="busan_address1">
+        <item>부산광역시</item>
+        <item>부산광역시</item>
+        <item>부산광역시</item>
+        <item>부산광역시</item>
+        <item>부산광역시</item>
+        <item>부산광역시</item>
+    </string-array>
+
+    <string-array name="busan_address2">
+        <item>동구 중앙대로 233</item>
+        <item>부산진구 서전로8번길 11</item>
+        <item>부산진구 서전로10번길 71 2층</item>
+        <item>수영구 광남로 124</item>
+        <item>구포동 1087-435</item>
+        <item>수영구 광남로 152</item>
+    </string-array>
+
+    <string-array name="busan_order_text">
+        <item>주문 가능 |</item>
+        <item>주문 가능 |</item>
+        <item>주문 가능 |</item>
+        <item>주문 가능 |</item>
+        <item>주문 가능 |</item>
+        <item>주문 불가능 |</item>
+    </string-array>
+
+    <string-array name="busan_reserve_text">
+        <item>| 예약 가능</item>
+        <item>| 예약 가능</item>
+        <item>| 예약 가능</item>
+        <item>| 예약 가능</item>
+        <item>| 예약 가능</item>
+        <item>| 예약 불가능</item>
+    </string-array>
+
+    <string-array name="jeju_shopname">
+        <item>제주카페1</item>
+        <item>제주카페2</item>
+        <item>제주카페3</item>
+        <item>제주카페4</item>
+        <item>제주카페5</item>
+        <item>제주카페6</item>
+    </string-array>
+
+    <string-array name="jeju_address1">
+        <item>제주특별자치도</item>
+        <item>제주특별자치도</item>
+        <item>제주특별자치도</item>
+        <item>제주특별자치도</item>
+        <item>제주특별자치도</item>
+        <item>제주특별자치도</item>
+    </string-array>
+
+    <string-array name="jeju_address2">
+        <item>제주시 조천읍 조함해안로 152</item>
+        <item>서귀포시 성산읍 일출로 80</item>
+        <item>제주시 서해안로 380</item>
+        <item>제주시 애월읍 애월해안로 375</item>
+        <item>서귀포시 성산읍 일출로 284-5</item>
+        <item>제주시 조천읍 조함해안로 522</item>
+    </string-array>
+
+    <string-array name="jeju_order_text">
+        <item>주문 가능 |</item>
+        <item>주문 가능 |</item>
+        <item>주문 가능 |</item>
+        <item>주문 가능 |</item>
+        <item>주문 가능 |</item>
+        <item>주문 불가능 |</item>
+    </string-array>
+
+    <string-array name="jeju_reserve_text">
+        <item>| 예약 가능</item>
+        <item>| 예약 가능</item>
+        <item>| 예약 가능</item>
+        <item>| 예약 가능</item>
+        <item>| 예약 가능</item>
+        <item>| 예약 불가능</item>
+    </string-array>
+
+</resources>

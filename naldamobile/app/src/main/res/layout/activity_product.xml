@@ -1,0 +1,365 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/product_bg"
+    tools:context=".ProductActivity">
+
+    <RelativeLayout
+        android:id="@+id/relativeLayout2"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar_product"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="#143D68"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+            app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
+            <TextView
+                android:id="@+id/toolbar_product_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="날다카페 서울역점"
+                android:textAlignment="center"
+                android:textColor="@color/white"
+                android:layout_marginRight="60dp"
+                android:textSize="20sp" />
+
+        </androidx.appcompat.widget.Toolbar>
+
+        <com.google.android.material.tabs.TabLayout
+            app:tabTextColor="@color/black"
+            android:id="@+id/tabLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            app:tabGravity="fill"
+            app:tabIndicatorColor="#084cb2"
+            app:tabSelectedTextColor="@color/white"
+            android:layout_below="@+id/toolbar_product"
+            app:tabIndicatorHeight="50dp"
+            app:tabMode="scrollable" />
+
+        <androidx.viewpager.widget.ViewPager
+            android:id="@+id/viewPager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/tabLayout"
+            app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior" />
+
+    </RelativeLayout>
+
+<!--    <TextView-->
+<!--        android:id="@+id/typeText"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginTop="8dp"-->
+<!--        android:text="HOT"-->
+<!--        android:textSize="24sp"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/relativeLayout2" />-->
+
+<!--    <Button-->
+<!--        android:id="@+id/type1"-->
+<!--        android:layout_width="40dp"-->
+<!--        android:layout_height="40dp"-->
+<!--        android:layout_alignParentLeft="true"-->
+<!--        android:layout_centerVertical="true"-->
+<!--        android:backgroundTint="@color/white"-->
+<!--        android:onClick="typeDecrement"-->
+<!--        android:text="-"-->
+<!--        android:textColor="@color/black"-->
+<!--        app:layout_constraintBottom_toBottomOf="@+id/typeText"-->
+<!--        app:layout_constraintEnd_toStartOf="@+id/typeText"-->
+<!--        app:layout_constraintHorizontal_bias="0.90"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="@+id/typeText"-->
+<!--        app:srcCompat="@android:drawable/arrow_down_float" />-->
+
+<!--    <Button-->
+<!--        android:id="@+id/type2"-->
+<!--        android:layout_width="40dp"-->
+<!--        android:layout_height="40dp"-->
+<!--        android:layout_alignParentLeft="true"-->
+<!--        android:layout_centerVertical="true"-->
+<!--        android:backgroundTint="@color/white"-->
+<!--        android:onClick="typeIncrement"-->
+<!--        android:text="+"-->
+<!--        android:textColor="@color/black"-->
+
+<!--        app:layout_constraintBottom_toBottomOf="@+id/typeText"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintHorizontal_bias="0.049"-->
+<!--        app:layout_constraintStart_toEndOf="@+id/typeText"-->
+<!--        app:layout_constraintTop_toTopOf="@+id/typeText"-->
+<!--        app:layout_constraintVertical_bias="0.0"-->
+<!--        app:srcCompat="@android:drawable/arrow_up_float" />-->
+
+<!--    <TextView-->
+<!--        android:id="@+id/shotTitle"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginTop="24dp"-->
+<!--        android:text="SHOT"-->
+
+<!--        android:textSize="20sp"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintHorizontal_bias="0.504"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/amountText" />-->
+
+<!--    <TextView-->
+<!--        android:id="@+id/amountText"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginTop="8dp"-->
+<!--        android:text="1"-->
+
+<!--        android:textSize="24sp"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/amountTitle" />-->
+
+<!--    <Button-->
+<!--        android:id="@+id/amountUp"-->
+<!--        android:layout_width="40dp"-->
+<!--        android:layout_height="40dp"-->
+<!--        android:layout_alignParentLeft="true"-->
+<!--        android:layout_centerVertical="true"-->
+<!--        android:backgroundTint="@color/white"-->
+<!--        android:onClick="amountIncrement"-->
+<!--        android:text="+"-->
+<!--        android:textColor="@color/black"-->
+<!--        app:layout_constraintHorizontal_bias="0.15"-->
+<!--        app:layout_constraintBottom_toBottomOf="@+id/amountText"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toEndOf="@+id/amountText"-->
+<!--        app:layout_constraintTop_toTopOf="@+id/amountText"-->
+<!--        app:srcCompat="@android:drawable/arrow_up_float" />-->
+
+<!--    <Button-->
+<!--        android:id="@+id/shotDown"-->
+<!--        android:layout_width="40dp"-->
+<!--        android:layout_height="40dp"-->
+<!--        android:layout_alignParentLeft="true"-->
+<!--        android:layout_centerVertical="true"-->
+<!--        android:backgroundTint="@color/white"-->
+<!--        android:onClick="shotDecrement"-->
+<!--        android:text="-"-->
+<!--        android:textColor="@color/black"-->
+<!--        app:layout_constraintHorizontal_bias="0.85"-->
+<!--        app:layout_constraintBottom_toBottomOf="@+id/shotText"-->
+<!--        app:layout_constraintEnd_toStartOf="@+id/shotText"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="@+id/shotText"-->
+<!--        app:srcCompat="@android:drawable/arrow_down_float" />-->
+
+<!--    <TextView-->
+<!--        android:id="@+id/shotText"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginTop="8dp"-->
+<!--        android:text="0"-->
+
+<!--        android:textSize="24sp"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/shotTitle" />-->
+
+<!--    <TextView-->
+<!--        android:id="@+id/amountTitle"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginTop="24dp"-->
+<!--        android:text="수량"-->
+<!--        android:textSize="20sp"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/typeText" />-->
+
+<!--    <Button-->
+<!--        android:id="@+id/shotUp"-->
+<!--        android:layout_width="40dp"-->
+<!--        android:layout_height="40dp"-->
+<!--        android:layout_alignParentLeft="true"-->
+<!--        android:layout_centerVertical="true"-->
+<!--        android:backgroundTint="@color/white"-->
+<!--        android:onClick="shotIncrement"-->
+<!--        android:text="+"-->
+<!--        android:textColor="@color/black"-->
+<!--        app:layout_constraintHorizontal_bias="0.15"-->
+<!--        app:layout_constraintBottom_toBottomOf="@+id/shotText"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toEndOf="@+id/shotText"-->
+<!--        app:layout_constraintTop_toTopOf="@+id/shotText"-->
+<!--        app:srcCompat="@android:drawable/arrow_up_float" />-->
+
+<!--    <Button-->
+<!--        android:id="@+id/amountDown"-->
+<!--        android:layout_width="40dp"-->
+<!--        android:layout_height="40dp"-->
+<!--        android:layout_alignParentLeft="true"-->
+<!--        android:layout_centerVertical="true"-->
+<!--        android:backgroundTint="@color/white"-->
+<!--        android:onClick="amountDecrement"-->
+<!--        android:text="-"-->
+<!--        android:textColor="@color/black"-->
+<!--        app:layout_constraintHorizontal_bias="0.85"-->
+<!--        app:layout_constraintBottom_toBottomOf="@+id/amountText"-->
+<!--        app:layout_constraintEnd_toStartOf="@+id/amountText"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="@+id/amountText"-->
+<!--        app:srcCompat="@android:drawable/arrow_down_float" />-->
+
+<!--    <View-->
+<!--        android:id="@+id/divider3"-->
+<!--        android:layout_width="200dp"-->
+<!--        android:layout_height="1dp"-->
+<!--        android:layout_marginTop="16dp"-->
+<!--        android:background="?android:attr/listDivider"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintHorizontal_bias="0.497"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/shotText" />-->
+
+<!--    <TextView-->
+<!--        android:id="@+id/price1"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginTop="16dp"-->
+<!--        android:text="가격 : 원"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/divider3" />-->
+
+
+<!--    <ImageButton-->
+<!--        android:id="@+id/reserveNow"-->
+<!--        android:layout_width="60dp"-->
+<!--        android:layout_height="60dp"-->
+
+<!--        android:background="@drawable/pdt_btn"-->
+<!--        android:src="@drawable/reserve"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toStartOf="@+id/orderNow"-->
+<!--        app:layout_constraintHorizontal_bias="0.537"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/price1"-->
+<!--        app:layout_constraintVertical_bias="0.263" />-->
+
+<!--    <TextView-->
+<!--        android:id="@+id/reserveText"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:text="예약"-->
+<!--        android:textColor="@color/black"-->
+<!--        android:textStyle="bold"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintHorizontal_bias="0.129"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/reserveNow"-->
+<!--        app:layout_constraintVertical_bias="0.018" />-->
+
+<!--    <ImageButton-->
+<!--        android:id="@+id/orderNow"-->
+<!--        android:layout_width="60dp"-->
+<!--        android:layout_height="60dp"-->
+<!--        android:layout_marginEnd="224dp"-->
+<!--        android:background="@drawable/pdt_btn"-->
+<!--        android:src="@drawable/credit"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/price1"-->
+<!--        app:layout_constraintVertical_bias="0.223"-->
+<!--        android:layout_marginRight="224dp" />-->
+
+<!--    <TextView-->
+<!--        android:id="@+id/orderText"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:text="주문"-->
+<!--        android:textColor="@color/black"-->
+<!--        android:textStyle="bold"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintHorizontal_bias="0.376"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/orderNow"-->
+<!--        app:layout_constraintVertical_bias="0.018" />-->
+
+<!--    <ImageButton-->
+<!--        android:onClick="goBasket"-->
+<!--        android:id="@+id/addCart"-->
+<!--        android:layout_width="60dp"-->
+<!--        android:layout_height="60dp"-->
+<!--        android:background="@drawable/pdt_btn"-->
+<!--        android:src="@drawable/cart"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintHorizontal_bias="0.225"-->
+<!--        app:layout_constraintStart_toEndOf="@+id/orderNow"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/price1"-->
+<!--        app:layout_constraintVertical_bias="0.21" />-->
+
+<!--    <TextView-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:text="장바구니 담기"-->
+<!--        android:textColor="@color/black"-->
+<!--        android:textStyle="bold"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintHorizontal_bias="0.642"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/addCart"-->
+<!--        app:layout_constraintVertical_bias="0.0" />-->
+
+<!--    <ImageButton-->
+<!--        android:id="@+id/cancel"-->
+<!--        android:layout_width="60dp"-->
+<!--        android:layout_height="60dp"-->
+<!--        android:background="@drawable/pdt_resetbtn"-->
+<!--        android:src="@drawable/reset"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintHorizontal_bias="0.65"-->
+<!--        app:layout_constraintStart_toEndOf="@+id/addCart"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/price1"-->
+<!--        app:layout_constraintVertical_bias="0.211" />-->
+
+<!--    <TextView-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:text="초기화"-->
+<!--        android:textColor="@color/black"-->
+<!--        android:textStyle="bold"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintHorizontal_bias="0.915"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/cancel"-->
+<!--        app:layout_constraintVertical_bias="0.0" />-->
+
+<!--    <TextView-->
+<!--        android:id="@+id/chatTV"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:text=""-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent" />-->
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+

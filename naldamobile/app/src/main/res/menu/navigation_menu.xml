@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/item_home"
+            android:title="홈으로"
+            android:enabled="false"
+            android:icon="@drawable/home" />
+        <item
+            android:id="@+id/item_history"
+            android:title="거래내역"
+            android:icon="@drawable/history" />
+        <item
+            android:id="@+id/item_modifiend"
+            android:title="정보수정"
+            android:icon="@drawable/modifiend" />
+
+    </group>
+
+</menu>
