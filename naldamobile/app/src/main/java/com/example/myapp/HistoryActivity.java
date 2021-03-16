@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -117,6 +118,11 @@ public class HistoryActivity extends AppCompatActivity {
 
                 // 어댑터에 초기화
                 historyRecycler.setAdapter(historyAdapter);
+
+                search_today.setBackgroundResource(R.drawable.click_today);;
+                search_month.setBackgroundResource(R.drawable.click_none);;
+                search_today.setTextColor(Color.parseColor("#ffffff"));
+                search_month.setTextColor(Color.parseColor("#000000"));
             }
         });
 
@@ -138,6 +144,11 @@ public class HistoryActivity extends AppCompatActivity {
                 items.add(new HistoryModel("군포점", "결제 완료", d_date + ", " + "09:33", "아메리카노", d_price, "예약", "18:30"));
 
                 historyRecycler.setAdapter(historyAdapter);
+
+                search_today.setBackgroundResource(R.drawable.click_none);;
+                search_month.setBackgroundResource(R.drawable.click_today);;
+                search_today.setTextColor(Color.parseColor("#000000"));
+                search_month.setTextColor(Color.parseColor("#ffffff"));
             }
         });
     }

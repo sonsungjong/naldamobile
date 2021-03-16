@@ -41,7 +41,6 @@
         app:layout_constraintStart_toStartOf="parent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/white"
         android:orientation="horizontal">
 
         <androidx.appcompat.widget.AppCompatButton
@@ -49,6 +48,8 @@
             android:text="당일"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:textColor="@color/black"
             android:layout_weight="1"
             />
 
@@ -56,6 +57,8 @@
             android:id="@+id/search_month"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:textColor="@color/black"
             android:layout_weight="1"
             android:text="3개월" />
 
