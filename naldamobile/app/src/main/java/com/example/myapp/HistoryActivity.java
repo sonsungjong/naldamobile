@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -43,15 +44,10 @@ import java.util.UUID;
 
 public class HistoryActivity extends AppCompatActivity {
 
-    // 실제 서버
-    private String ip = "210.114.12.66";
-    private int port = 1387;
-    // 내컴퓨터 테스트용
-//    private String ip = "192.168.0.60";
-//    private int port = 1001;
-
+    public static Context mContext;
     private Handler mHandler;
-    Socket socket;
+    int idx1, idx2, idx3, idx4, idx5, idx6, idx7, idx8, idx9, idx10, idx11, idx12, idx13, idx14, idx15, idx16, idxEnd;
+    String response_detail_information;
 
     RecyclerView historyRecycler;
     HistoryAdapter historyAdapter;
@@ -66,13 +62,15 @@ public class HistoryActivity extends AppCompatActivity {
     public String time_today = dfTime.format(new Date());   // 한국 현재시간
     public String time_today2 = dfTime2.format(new Date());   // 한국 현재시간(분까지만)
     public String pay_result = "결제 완료", d_pdt_name = "쿠키", d_shop_name = "군포점", d_date = date_today, d_time = time_today2, d_price = "2000원", d_classify = "실시간 주문", d_reserve_time = "";
+    public String from_date = date_today;        // 한국 현재날짜에서 -3달
+    public String to_date = date_today;       //한국 현재날짜 받아오기
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_history);
-
+        mContext = this;
         mHandler = new Handler();
 
         items = new ArrayList<>();
@@ -85,9 +83,16 @@ public class HistoryActivity extends AppCompatActivity {
         search_month = (Button) findViewById(R.id.search_month);
         historyRecycler = findViewById(R.id.today_item);
 
-        // 잠시막음
-//        ConnectThread th = new ConnectThread();
-//        th.start();
+        IntroActivity.MsgThread mt = new IntroActivity.MsgThread(
+                "STX"
+                        +"MS07"
+                        +"0128"
+                        +"00"
+                        +"D01="+from_date
+                        +"D02="+to_date
+                        +"ETX"
+        );
+        mt.start();
 
     } // onCreate()
 
@@ -145,8 +150,8 @@ public class HistoryActivity extends AppCompatActivity {
 
                 historyRecycler.setAdapter(historyAdapter);
 
-                search_today.setBackgroundResource(R.drawable.click_none);;
-                search_month.setBackgroundResource(R.drawable.click_today);;
+                search_today.setBackgroundResource(R.drawable.click_none);
+                search_month.setBackgroundResource(R.drawable.click_today);
                 search_today.setTextColor(Color.parseColor("#000000"));
                 search_month.setTextColor(Color.parseColor("#ffffff"));
             }
@@ -164,88 +169,51 @@ public class HistoryActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    // 임시로 DetailPageActivity 이동
     public void detail(View view){
         Intent intent = new Intent(this, DetailPageActivity.class);
         startActivity(intent);
     }
 
-    // today
-    class ConnectThread extends Thread{
-        public String from_date = date_today;        // 한국 현재날짜에서 -3달
-        public String to_date = date_today;       //한국 현재날짜 받아오기
-        @Override
-        public void run() {
-            try {
-                InetAddress serverAddr = InetAddress.getByName(ip);
-                socket = new Socket(serverAddr, port);
-
-                // 보낼 메시지
-                String sndMsg =
-                        "STX"
-                                +"MS07"
-                                +"0128"
-                                +"00"
-                                +"D01="+from_date
-                                +"D02="+to_date
-                                +"ETX";
-                Log.d("=============", sndMsg);
-
-                // 전송
-                PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(),"utf-16le")), true);
-                out.println(sndMsg);
-
-                // 수신
-                BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream(),"utf-16le"));
-                String read = input.readLine();
-                mHandler.post(new msgUpdate(read));
-                // 테스트용 : 화면출력
-                Log.d("=============", read);
-            }catch(Exception e){
-                e.printStackTrace();
-            }
+    // pay_result = "결제 완료", d_pdt_name = "아메리카노", d_shop_name = "군포점", d_date = "2020-12-31", d_time = "09:40", d_price = "2000원", d_classify = "실시간 주문", d_reserve_time = "00:00";
+    // 예약시간이 00:00으로 들어오면 빈값으로 리턴
+    public String reserve_time(String d_reserve_time){
+        if(d_reserve_time.equals("00:00")){
+            return "";
+        }
+        return d_reserve_time;
+    }
+    public void printHistory(String read){
+        if(read.contains("STXMS0700")){
+            // 받은 msg를 파싱처리해서 변수에 저장
+            idx1 = read.indexOf("D01=");  //+4
+            idx2 = read.indexOf("D02=");
+            idx3 = read.indexOf("D03=");
+            idx4 = read.indexOf("D04=");
+            idx5 = read.indexOf("D05=");
+            idx6 = read.indexOf("D06=");
+            idx7 = read.indexOf("D07=");
+            idx8 = read.indexOf("D08=");
+            idxEnd = read.indexOf("ETX");
+            // 반복문용 카운트
+            record_count = Integer.parseInt(read.substring(idx1 + 4, idx2));
+            d_date = read.substring(idx2 + 4, idx3);
+            d_time = read.substring(idx3 + 4, idx4);
+            d_shop_name = read.substring(idx4 + 4, idx5);
+            d_pdt_name = read.substring(idx5 + 4, idx6);
+            d_price = read.substring(idx6 + 4, idx7);
+            d_classify = (read.substring(idx7 + 4, idx8));
+            d_reserve_time = reserve_time(read.substring(idx8 + 4, idx8 + 8));
+            pay_result = "결제 완료";
+        }else{
+            // 네트워크 환경이 원활하지 않습니다.
         }
     }
 
-    class msgUpdate implements Runnable {
-        private String msg;
-        int idx1, idx2, idx3, idx4, idx5, idx6, idx7, idx8, idx9, idx10, idx11, idx12, idx13, idx14, idx15, idx16, idxEnd;
-        public msgUpdate(String msg) {
-            this.msg = msg;
+    public String requestDetailInfo(String read){
+        if(read.contains("STXMS0800")){
+            return read;
         }
-        public void run() {
-            if(msg.contains("STXMS0700")) {
-                // 받은 msg를 파싱처리해서 변수에 저장
-                idx1 = msg.indexOf("D01=");  //+4
-                idx2 = msg.indexOf("D02=");
-                idx3 = msg.indexOf("D03=");
-                idx4 = msg.indexOf("D04=");
-                idx5 = msg.indexOf("D05=");
-                idx6 = msg.indexOf("D06=");
-                idx7 = msg.indexOf("D07=");
-                idx8 = msg.indexOf("D08=");
-                idxEnd = msg.indexOf("ETX");
-                // 반복문용 카운트
-                record_count = Integer.parseInt(msg.substring(idx1 + 4, idx2));
-                d_date = msg.substring(idx2 + 4, idx3);
-                d_time = msg.substring(idx3 + 4, idx4);
-                d_shop_name = msg.substring(idx4 + 4, idx5);
-                d_pdt_name = msg.substring(idx5 + 4, idx6);
-                d_price = msg.substring(idx6 + 4, idx7);
-                d_classify = (msg.substring(idx7 + 4, idx8));
-                d_reserve_time = reserve_time(msg.substring(idx8 + 4, idx8 + 8));
-                pay_result = "결제 완료";
-            }else{
-                Toast.makeText(HistoryActivity.this, "서버와 통신이 원할하지 않습니다.", Toast.LENGTH_SHORT).show();
-            }
-            
-// pay_result = "결제 완료", d_pdt_name = "아메리카노", d_shop_name = "군포점", d_date = "2020-12-31", d_time = "09:40", d_price = "2000원", d_classify = "실시간 주문", d_reserve_time = "00:00";
-        }
-        // 예약시간이 00:00으로 들어오면 빈값으로 리턴
-        public String reserve_time(String d_reserve_time){
-            if(d_reserve_time.equals("00:00")){
-                return "";
-            }
-            return d_reserve_time;
-        }
+        return "";
     }
 }

@@ -19,6 +19,7 @@ import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
 import com.example.myapp.BasketActivity;
+import com.example.myapp.IntroActivity;
 import com.example.myapp.PaymentActivity;
 import com.example.myapp.ProductActivity;
 import com.example.myapp.R;
@@ -40,13 +41,6 @@ import java.util.List;
 public class FragmentParent4 extends Fragment {
 
     private Handler mHandler;
-    Socket socket;
-    // 실제 서버
-    private String ip = "210.114.12.66";
-    private int port = 1387;
-    // 내컴퓨터 테스트용
-//    private String ip = "192.168.0.60";
-//    private int port = 1001;
 
     ViewPager viewPager;
     ProductImageAdapter adapter;
@@ -56,15 +50,15 @@ public class FragmentParent4 extends Fragment {
     ImageButton reserveNow_f4, orderNow_f4, addCart_f4, cancel_f4;
 
     TextView amountText_f4, price1_f4;
+    String typeCnt = "HOT";
+    int shotCnt = 0;
     int amountCnt = 1;
     String menu_count = "01";
     String pdt_name = "레몬에이드";
     String pdt_price = "4300";
     int total_price = Integer.parseInt(pdt_price);
-    String typeCnt = "Normal";
-    int shotCnt = 0;
-//    String open_flag = "Y";
-//    String reserve_flag = "Y";
+    int itemId = 101;
+    int basket_price;
 
     Calendar cal = Calendar.getInstance();
     int year = cal.get(Calendar.YEAR);
@@ -75,10 +69,10 @@ public class FragmentParent4 extends Fragment {
     int sec = cal.get(Calendar.SECOND);
     String reserve_hour = "";
     String reserve_minute = "";
+//    String open_flag = "Y";
+//    String reserve_flag = "Y";
 
     Button amountDown_f4, amountUp_f4;
-    // member_id와 shop_name static 버그날때 사용하기
-//    ProductActivity pa = new ProductActivity();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -116,6 +110,7 @@ public class FragmentParent4 extends Fragment {
         viewPager = view.findViewById(R.id.viewPager5);
         viewPager.setAdapter(adapter);
         viewPager.setPadding(130, 0, 130, 0);
+        basket_price = Integer.parseInt(total_price(total_price));
 
         // 지점오픈여부
 //        if(open_flag == "N"){orderNow_f4.setEnabled(false);}
@@ -123,8 +118,23 @@ public class FragmentParent4 extends Fragment {
         orderNow_f4.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                ConnectThread th = new ConnectThread();
-                th.start();
+                IntroActivity.MsgThread mt = new IntroActivity.MsgThread(
+                        "STX"
+                                +"MS04"
+                                +"00"
+                                +"ID="+ProductActivity.member_id
+                                +"SHOP="+ProductActivity.shop_name
+                                +"COUNT="+menu_count
+                                +"D01="+pdt_name
+                                +"D02="+typeCntNumber(typeCnt)
+                                +"D03="+amountCnt(amountCnt)
+                                +"D04="+shotCnt(shotCnt)
+                                +"D05="+total_price(total_price)
+                                +"PRICE="+basket_total_price(Integer.parseInt(total_price(total_price)))
+                                +"MSG="+""
+                                +"ETX"
+                );
+                mt.start();
             }
         });
 
@@ -141,13 +151,27 @@ public class FragmentParent4 extends Fragment {
                             reserve_hour = "0"+hourOfDay;
                         }else{reserve_hour = ""+hourOfDay;}
                         if(minute<10){reserve_minute="0"+minute;}else{reserve_minute=""+minute;}
-                        ConnectThreadReserve th2 = new ConnectThreadReserve();
-                        th2.start();
+                            IntroActivity.MsgThread mt = new IntroActivity.MsgThread(
+                                "STX"
+                                        +"MS05"
+                                        +"00"
+                                        +year+"-"+reserve_month(month)+"-"+reserve_day(day)
+                                        +reserve_hour+":"+reserve_minute
+                                        +"ID="+ProductActivity.member_id
+                                        +"SHOP="+ProductActivity.shop_name
+                                        +"COUNT="+menu_count
+                                        +"D01="+pdt_name
+                                        +"D02="+typeCntNumber(typeCnt)
+                                        +"D03="+amountCnt(amountCnt)
+                                        +"D04="+shotCnt(shotCnt)
+                                        +"D05="+total_price(total_price)
+                                        +"PRICE="+basket_total_price(Integer.parseInt(total_price(total_price)))
+                                        +"ETX");
+                            mt.start();
                     }
                 }, hour, min, false);
                 timePickerDialog.setTitle("예약 설정");
                 timePickerDialog.show();
-
             }
         });
 
@@ -225,9 +249,6 @@ public class FragmentParent4 extends Fragment {
 
         return view;
     }
-
-    //주문
-    class ConnectThread extends Thread{
         String result = "";
         String result2 = "";
         private String basket_total_price(int basket_price) {
@@ -280,51 +301,7 @@ public class FragmentParent4 extends Fragment {
             }
             return typeNum;
         }
-        //주문
-        @Override
-        public void run() {
-            try {
-                InetAddress serverAddr = InetAddress.getByName(ip);
-                socket = new Socket(serverAddr, port);
 
-                int basket_price = Integer.parseInt(total_price(total_price));
-
-                // 보낼 메시지
-                String sndMsg =
-                        "STX"
-                                +"MS04"
-                                +"00"
-                                +"ID="+ProductActivity.member_id
-                                +"SHOP="+ProductActivity.shop_name
-                                +"COUNT="+menu_count
-                                +"D01="+pdt_name
-                                +"D02="+typeCntNumber(typeCnt)
-                                +"D03="+amountCnt(amountCnt)
-                                +"D04="+shotCnt(shotCnt)
-                                +"D05="+total_price(total_price)
-                                +"PRICE="+basket_total_price(basket_price)
-                                +"MSG="+""
-                                +"ETX";
-
-//                sndMsg = getStringToByte(sndMsg);
-                Log.d("=============", sndMsg);
-
-                // 전송
-                PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(),"utf-16le")), true);
-                out.println(sndMsg);
-
-                // 수신
-                BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream(),"utf-16le"));
-                String read = input.readLine();
-                mHandler.post(new msgUpdate(read));
-                // 테스트용 : 화면출력
-                Log.d("=============", read);
-
-                socket.close();
-            }catch(Exception e){
-                e.printStackTrace();
-            }
-        }
         public String amountCnt(int amountCnt){
             String amountString = "";
             if(amountCnt<10){
@@ -342,201 +319,6 @@ public class FragmentParent4 extends Fragment {
             return shotString;
         }
 
-        private String month(int month) {
-            String monthS = "";
-            if(month<10){monthS = "0"+month;}
-            else{monthS = ""+month;}
-            return monthS;
-        }
-        private String day(int day) {
-            String dayS = "";
-            if(day<10){dayS = "0"+day;}
-            else{dayS = ""+day;}
-            return dayS;
-        }
-        private String hour(int hour) {
-            String hourS = "";
-            if(hour<10){hourS = "0"+hour;}
-            else{hourS = ""+hour;}
-            return hourS;
-        }
-        private String min(int min) {
-            String minS = "";
-            if(min<10){minS = "0"+min;}
-            else{minS = ""+min;}
-            return minS;
-        }
-        private String sec(int sec) {
-            String secS = "";
-            if(sec<10){secS = "0"+sec;}
-            else{secS = ""+sec;}
-            return secS;
-        }
-    }
-    //주문
-    class msgUpdate implements Runnable {
-        private String msg;
-        public msgUpdate(String str) {
-            this.msg = str;
-        }
-        public void run() {
-            chatTV_f4.setText(chatTV_f4.getText().toString() + msg + "\n");
-            if((chatTV_f4.getText().toString()).contains("STXMS0400")){
-//                Toast.makeText(getApplicationContext(), "주문 진행", Toast.LENGTH_LONG).show();
-                // 주문확인 팝업으로 이동
-//                Intent intent1 = new Intent(getApplicationContext(), Order_PopupActivity.class);
-//                startActivityForResult(intent1, 1);
-
-                // 결제모듈 테스트용(주문하기)
-                Intent payjoa = new Intent(getActivity().getApplicationContext(), PaymentActivity.class);
-                payjoa.putExtra("member_id",ProductActivity.member_id);
-                payjoa.putExtra("shop_name",ProductActivity.shop_name);
-                payjoa.putExtra("menu_count",menu_count);
-                payjoa.putExtra("pdt_name",pdt_name);
-                payjoa.putExtra("type",typeCnt);
-                payjoa.putExtra("choice",shotCnt);
-                payjoa.putExtra("amount",amountCnt);
-                payjoa.putExtra("total_price",total_price);
-                payjoa.putExtra("classify","order");
-                startActivity(payjoa);
-                getActivity().finish();
-
-            }else if((chatTV_f4.getText().toString()).contains("STXMS0401")){
-                Toast.makeText(getActivity().getApplicationContext(), "주문 실패", Toast.LENGTH_LONG).show();
-            }else if((chatTV_f4.getText().toString()).contains("STXMS0402")){
-                Toast.makeText(getActivity().getApplicationContext(), "해당 제품이 품절되었습니다", Toast.LENGTH_LONG).show();
-            }else if((chatTV_f4.getText().toString()).contains("STXMS0403")){
-                Toast.makeText(getActivity().getApplicationContext(), "오류03", Toast.LENGTH_LONG).show();
-            }else if(chatTV_f4.getText().toString() == null || chatTV_f4.getText().toString().equals("")){
-                Toast.makeText(getActivity().getApplicationContext(), "빈값", Toast.LENGTH_LONG).show();
-            }else{
-                Toast.makeText(getActivity().getApplicationContext(), "서버오류 발생", Toast.LENGTH_LONG).show();
-            }
-        }
-    }
-
-    //예약
-    class ConnectThreadReserve extends Thread{
-
-
-        int basket_price = Integer.parseInt(total_price(total_price));
-//        String dataCount = "12";
-
-        String result = "";
-        String result2 = "";
-        private String basket_total_price(int basket_price) {
-            if(basket_price <1){
-                result2 = "000000";
-            }else if(basket_price < 10){
-                result2 = "00000"+basket_price;
-            }else if(basket_price<100){
-                result2 ="0000"+basket_price;
-            }else if (basket_price < 1000){
-                result2 = "000"+basket_price;
-            }else if (basket_price < 10000){
-                result2 = "00"+basket_price;
-            }else if (basket_price < 100000){
-                result2 = "0"+basket_price;
-            }else if(basket_price <= 999999){
-                result2 = ""+basket_price;
-            }else{
-                result2 = "999999";
-            }
-            return result2;
-        }
-
-        private String total_price(int total_price) {
-            if(total_price <1){
-                result = "00000";
-            }else if(total_price < 10){
-                result = "0000"+total_price;
-            }else if(total_price<100){
-                result="000"+total_price;
-            }else if (total_price < 1000){
-                result = "00"+total_price;
-            }else if (total_price < 10000){
-                result = "0"+total_price;
-            }else if (total_price < 99999){
-                result = ""+total_price;
-            }else{
-                result = "99999";
-            }
-            return result;
-        }
-        private int typeCntNumber(String typeCnt){
-            int typeNum;
-            if(typeCnt == "HOT"){
-                typeNum = 1;
-            }else if(typeCnt == "ICE"){
-                typeNum = 2;
-            }else{
-                typeNum = 0;
-            }
-            return typeNum;
-        }
-        public String amountCnt(int amountCnt){
-            String amountString = "";
-            if(amountCnt<10){
-                amountString = "0"+amountCnt;
-            }else{
-                amountString = ""+amountCnt;
-            }
-            return amountString;
-        }
-        public String shotCnt(int shotCnt){
-            String shotString = "";
-            if(shotCnt<10){
-                shotString = "0"+shotCnt;
-            }else{shotString = ""+shotCnt;}
-            return shotString;
-        }
-        // 예약
-        @Override
-        public void run() {
-            try {
-                InetAddress serverAddr = InetAddress.getByName(ip);
-                socket = new Socket(serverAddr, port);
-                // 보낼 메시지
-                String sndMsg =
-                        "STX"
-                                +"MS05"
-                                +"00"
-                                +year+"-"+reserve_month(month)+"-"+reserve_day(day)
-                                +reserve_hour+":"+reserve_minute
-                                +"ID="+ProductActivity.member_id
-                                +"SHOP="+ProductActivity.shop_name
-                                +"COUNT="+menu_count
-                                +"D01="+pdt_name
-                                +"D02="+typeCntNumber(typeCnt)
-                                +"D03="+amountCnt(amountCnt)
-                                +"D04="+shotCnt(shotCnt)
-                                +"D05="+total_price(total_price)
-
-                                +"PRICE="+basket_total_price(basket_price)
-                                +"ETX";
-
-                Log.d("=============", sndMsg);
-
-                // 전송
-                PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(),"utf-16le")), true);
-                out.println(sndMsg);
-
-                // 예약응답 대기 시간동안 프로그레스바 출력
-
-                // 수신
-                BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream(),"utf-16le"));
-                String read = input.readLine();
-                mHandler.post(new msgUpdateReserve(read));
-                // 프로그레스바 없애기
-                Log.d("=============", read);
-
-
-                socket.close();
-            }catch(Exception e){
-                e.printStackTrace();
-            }
-        }
-        // 현재시간 함수
         private String month(int month) {
             String monthS = "";
             if(month<10){monthS = "0"+month;}
@@ -598,40 +380,4 @@ public class FragmentParent4 extends Fragment {
             else{secR = ""+sec;}
             return secR;
         }
-    }
-    //예약
-    class msgUpdateReserve implements Runnable{
-        private String msg;
-        public msgUpdateReserve(String str) {
-            this.msg = str;
-        }
-        public void run() {
-            chatTV_f4.setText(chatTV_f4.getText().toString() + msg + "\n");
-            if((chatTV_f4.getText().toString()).contains("STXMS0500")){
-                // 예약 완료
-                Intent payjoa = new Intent(getActivity().getApplicationContext(), PaymentActivity.class);
-                payjoa.putExtra("member_id",ProductActivity.member_id);
-                payjoa.putExtra("shop_name",ProductActivity.shop_name);
-                payjoa.putExtra("menu_count",menu_count);
-                payjoa.putExtra("pdt_name",pdt_name);
-                payjoa.putExtra("type",typeCnt);
-                payjoa.putExtra("choice",shotCnt);
-                payjoa.putExtra("amount",amountCnt);
-                payjoa.putExtra("total_price",total_price);
-                payjoa.putExtra("classify","reserve");
-                startActivity(payjoa);
-                getActivity().finish();
-            }else if((chatTV_f4.getText().toString()).contains("STXMS0401")){
-                Toast.makeText(getActivity().getApplicationContext(), "예약 실패", Toast.LENGTH_LONG).show();
-            }else if((chatTV_f4.getText().toString()).contains("STXMS0402")){
-                Toast.makeText(getActivity().getApplicationContext(), "같은 시간에 예약이 존재합니다. 다시 선택해주세요", Toast.LENGTH_LONG).show();
-            }else if((chatTV_f4.getText().toString()).contains("STXMS0403")){
-                Toast.makeText(getActivity().getApplicationContext(), "오류03", Toast.LENGTH_LONG).show();
-            }else if(chatTV_f4.getText().toString() == null || chatTV_f4.getText().toString().equals("")){
-                Toast.makeText(getActivity().getApplicationContext(), "빈값", Toast.LENGTH_LONG).show();
-            }else{
-                Toast.makeText(getActivity().getApplicationContext(), "서버오류 발생", Toast.LENGTH_LONG).show();
-            }
-        }
-    }
 }

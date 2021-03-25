@@ -32,14 +32,7 @@ public class PaymentActivity extends AppCompatActivity {
     // PaymentActivity 없애고 Product Fragment쪽에서 직접 결제하게하기
     // 장바구니에서 직접처리하게 하기
 
-    //     실제 서버
-    private String ip = "210.114.12.66";
-    private int port = 1387;
-    // 내컴퓨터 테스트용
-//    private String ip = "192.168.0.60";
-//    private int port = 1001;
-//
-    String member_id, menu_count, type, shop_name, pdt_name;
+    String menu_count, type, shop_name, pdt_name;
     String payNo = "", reserve_time = "";
     int choice, amount, total_price;
     int classify;
@@ -50,9 +43,9 @@ public class PaymentActivity extends AppCompatActivity {
         //      상태바 없애기
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_payment);
-
-        Iamport.INSTANCE.init(this);
         getData();
+        Iamport.INSTANCE.init(this);
+
 
 //        mHandler = new Handler();
 
@@ -92,25 +85,25 @@ public class PaymentActivity extends AppCompatActivity {
                         payNo = iamPortResponse.getImp_uid();
 
                         Intent intent = new Intent(this, Order_NumActivity.class);
+                        intent.putExtra("shop_name",shop_name);
                         intent.putExtra("menu_count",menu_count);
                         intent.putExtra("pdt_name",pdt_name);
-                        intent.putExtra("classify",classify);
                         intent.putExtra("type",type);
                         intent.putExtra("choice",choice);
                         intent.putExtra("amount",amount);
                         intent.putExtra("payNo",payNo);
                         intent.putExtra("total_price",total_price);
+                        intent.putExtra("classify",classify);
+                        intent.putExtra("reserve_time", reserve_time);
                         startActivity(intent);
                         finish();
-                    }else{
+                    }else if(iamPortResponse.getImp_success() == false){
 //                        결제 취소시
-                        finish();
+                        this.finish();
                     }
                     return Unit.INSTANCE;
                 });
-
     } // onCreate()
-
 
     @Override
     public void onDestroy() {
@@ -118,10 +111,8 @@ public class PaymentActivity extends AppCompatActivity {
         Iamport.INSTANCE.close();
     }
 
-
     private void getData(){
         if(getIntent().hasExtra("classify")){
-            member_id = getIntent().getStringExtra("member_id");
             shop_name = getIntent().getStringExtra("shop_name");
             menu_count = getIntent().getStringExtra("menu_count");
             pdt_name = getIntent().getStringExtra("pdt_name");
@@ -130,100 +121,9 @@ public class PaymentActivity extends AppCompatActivity {
             amount = getIntent().getIntExtra("amount",10);
             total_price = getIntent().getIntExtra("total_price",99);
             classify = getIntent().getIntExtra("classify",0);
+            reserve_time = getIntent().getStringExtra("reserve_time");
         }else{
             Toast.makeText(this,"No data",Toast.LENGTH_SHORT).show();
         }
     }
-//    private void setData(){
-//
-//    }
-/*
-    class ConnectThread extends Thread{
-        private String month(int month) {
-            String monthS = "";
-            if(month<10){monthS = "0"+month;}
-            else{monthS = ""+month;}
-            return monthS;
-        }
-        private String day(int day) {
-            String dayS = "";
-            if(day<10){dayS = "0"+day;}
-            else{dayS = ""+day;}
-            return dayS;
-        }
-        private String hour(int hour) {
-            String hourS = "";
-            if(hour<10){hourS = "0"+hour;}
-            else{hourS = ""+hour;}
-            return hourS;
-        }
-        private String min(int min) {
-            String minS = "";
-            if(min<10){minS = "0"+min;}
-            else{minS = ""+min;}
-            return minS;
-        }
-        private String sec(int sec) {
-            String secS = "";
-            if(sec<10){secS = "0"+sec;}
-            else{secS = ""+sec;}
-            return secS;
-        }
-        @Override
-        public void run() {
-            try {
-                InetAddress serverAddr = InetAddress.getByName(ip);
-                socket = new Socket(serverAddr, port);
-
-                // 보낼 메시지
-                String sndMsg =
-                        "STX"
-                                +"MS06"
-                                +"00"
-                                +"D01="+year+"-"+month(month)+"-"+day(day)
-                                +"D02="+hour(hour)+":"+min(min)+":"+sec(sec)
-                                +"D03="+member_id
-                                +"D04="+shop_name
-                                +"D05="+menu_count
-                                +"D06="+pdt_name
-                                +"D07="+type
-                                +"D08="+choice
-                                +"D09="+amount
-                                +"D10="+total_price
-                                +"D11="+cancel_info
-                                +"ETX";
-                Log.d("=============", sndMsg);
-
-                // 전송
-                PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(),"utf-16le")), true);
-                out.println(sndMsg);
-
-                // 수신
-                BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream(),"utf-16le"));
-                String read = input.readLine();
-                mHandler.post(new msgUpdate(read));
-                // 테스트용 : 화면출력
-                Log.d("=============", read);
-
-            }catch(Exception e){
-                e.printStackTrace();
-            }
-        }
-    }
-
-    class msgUpdate implements Runnable {
-        private String msg;
-        public msgUpdate(String str) {
-            this.msg = str;
-        }
-        public void run() {
-            if(msg.contains("STXMS0600ETX")){
-                Toast.makeText(PaymentActivity.this, "결재 완료", Toast.LENGTH_SHORT).show();
-            }else{
-                Toast.makeText(PaymentActivity.this, "결재 오류", Toast.LENGTH_SHORT).show();
-            }
-        }
-    }*/
-
-
 }

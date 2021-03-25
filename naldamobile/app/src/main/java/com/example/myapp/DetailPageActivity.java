@@ -26,18 +26,10 @@ import java.util.ArrayList;
 
 public class DetailPageActivity extends AppCompatActivity {
 
-//    // 실제 서버
-    private String ip = "210.114.12.66";
-    private int port = 1387;
-//    // 내컴퓨터 테스트용
-//    private String ip = "192.168.0.60";
-//    private int port = 1001;
     private Handler mHandler;
-    Socket socket;
     RecyclerView detailRecycler;
     DetailAdapter detailAdapter;
     ArrayList<DetailModel> ditems;
-    String member_id = ShopActivity.member_id;
     String uid;
     String data_address, data_shop_name, data_shop_number, data_date, data_time, data_pay_no, data_classify, data_reserve_time,
             data_total_price, data_pay_price, data_pay_method, data_phone, data_msg;
@@ -98,56 +90,17 @@ public class DetailPageActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    class ConnectThread extends Thread{
-        @Override
-        public void run() {
-            try {
-                InetAddress serverAddr = InetAddress.getByName(ip);
-                socket = new Socket(serverAddr, port);
-
-                // 보낼 메시지
-                String sndMsg =
-                        "STX"
-                                +"MS08"
-                                +"00"
-                                +"D01="+""
-                                +"D02="+""
-                                +"ETX";
-                Log.d("=============", sndMsg);
-
-                // 전송
-                PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(),"utf-16le")), true);
-                out.println(sndMsg);
-
-                // 수신
-                BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream(),"utf-16le"));
-                String read = input.readLine();
-                mHandler.post(new msgUpdate(read));
-                // 테스트용 : 화면출력
-                Log.d("=============", read);
-            }catch(Exception e){
-                e.printStackTrace();
-            }
-        }
-    }
-
-    class msgUpdate implements Runnable {
-        private String msg;
-        int idx1, idx2, idx3, idx4, idx5, idx6, idx7, idx8, idx9, idx10, idx11, idx12, idx13, idx14, idx15, idx16, idxEnd;
-        public msgUpdate(String msg) {
-            this.msg = msg;
-        }
-        public void run() {
-            // 받은 msg를 파싱처리해서 변수에 저장
-            idx1 = msg.indexOf("D01=");  //+4
-            idx2 = msg.indexOf("D02=");
-            idx3 = msg.indexOf("D03=");
-            idx4 = msg.indexOf("D04=");
-            idx5 = msg.indexOf("D05=");
-            idx6 = msg.indexOf("D06=");
-            idx7 = msg.indexOf("D07=");
-            idx8 = msg.indexOf("D08=");
-            idxEnd = msg.indexOf("ETX");
+//        public void run() {
+//            // 받은 msg를 파싱처리해서 변수에 저장
+//            idx1 = msg.indexOf("D01=");  //+4
+//            idx2 = msg.indexOf("D02=");
+//            idx3 = msg.indexOf("D03=");
+//            idx4 = msg.indexOf("D04=");
+//            idx5 = msg.indexOf("D05=");
+//            idx6 = msg.indexOf("D06=");
+//            idx7 = msg.indexOf("D07=");
+//            idx8 = msg.indexOf("D08=");
+//            idxEnd = msg.indexOf("ETX");
             // 반복문용 카운트
 //            record_count = Integer.parseInt(msg.substring(idx1+4, idx2));
 //            d_date = msg.substring(idx2+4, idx3);
@@ -158,7 +111,7 @@ public class DetailPageActivity extends AppCompatActivity {
 //            d_classify = (msg.substring(idx7+4, idx8));
 //            d_reserve_time = reserve_time(msg.substring(idx8+4, idx8+8));
 
-        }
+//        }
         // 예약시간이 00:00으로 들어오면 빈값으로 반환, 값이 들어오면 괄호처리
         public String reserve_time(String d_reserve_time){
             if(d_reserve_time.equals("00:00")){
@@ -166,5 +119,5 @@ public class DetailPageActivity extends AppCompatActivity {
             }
             return "( "+d_reserve_time+" )";
         }
-    }
+
 }

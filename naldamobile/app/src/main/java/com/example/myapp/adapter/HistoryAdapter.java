@@ -30,6 +30,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryV
     ArrayList<HistoryModel> items;
     int visibleThreshold =5;
     int lastVisibleItem, totalItemCount;
+    Context context;
 
     public HistoryAdapter(RecyclerView recyclerView, Activity activity, ArrayList<HistoryModel> items) {
         this.activity = activity;

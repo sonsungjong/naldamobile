@@ -55,7 +55,6 @@
         <activity android:name=".ShopActivity">
 
         </activity>
-        <service android:name=".SocketClass" android:exported="false"/>
     </application>
 
 </manifest>

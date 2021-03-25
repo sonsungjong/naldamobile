@@ -2,6 +2,7 @@ package com.example.myapp;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -27,13 +28,7 @@ import java.util.Locale;
 
 public class Order_NumActivity extends AppCompatActivity {
 
-    Socket socket;
-    //     실제 서버
-    private String ip = "210.114.12.66";
-    private int port = 1387;
-    // 내컴퓨터 테스트용
-//    private String ip = "192.168.0.60";
-//    private int port = 1001;
+    public static Context mContext;
 
     private Handler mHandler;
     Button goHome;
@@ -55,7 +50,7 @@ public class Order_NumActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_order__num);
-
+        mContext = this;
         mHandler = new Handler();
         getData();
 
@@ -65,10 +60,70 @@ public class Order_NumActivity extends AppCompatActivity {
         goHome.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ConnectThread th = new ConnectThread();
-                th.start();
+                IntroActivity.MsgThread mt = new IntroActivity.MsgThread(
+                        "STX"+"MS06"+"00"
+                        +year+"-"+month(month)+"-"+day(day)
+                        +hour(hour)+":"+min(min)+":"+sec(sec)
+                        +"ID="+ShopActivity.member_id
+                        +"SHOP="+shop_name
+                        +"COUNT="+menu_count
+                        +"D01="+pdt_name
+                        +"D02="+type
+                        +"D03="+amount
+                        +"D04="+stringChoice(choice)
+                        +"D05="+string_total_price(total_price)
+                        +"PRICE="+final_string_total_price(total_price)
+                        +"PAYNO="+payNo
+                        +"CLS="+classify
+                        +"MSG="+reserve_time
+                        +"ETX"
+                );
+                mt.start();
             }
         });
+    }
+
+    private String final_string_total_price(int total_price) {
+        if(total_price <1){
+            return "000000";
+        }else if(total_price < 10){
+            return "00000"+total_price;
+        }else if(total_price<100){
+            return "0000"+total_price;
+        }else if (total_price < 1000){
+            return "000"+total_price;
+        }else if (total_price < 10000){
+            return "00"+total_price;
+        }else if(total_price < 100000){
+            return "0"+total_price;
+        }else{
+            return ""+total_price;
+        }
+    }
+
+    private String string_total_price(int total_price) {
+        if(total_price <1){
+            return "00000";
+        }else if(total_price < 10){
+            return "0000"+total_price;
+        }else if(total_price<100){
+            return "000"+total_price;
+        }else if (total_price < 1000){
+            return "00"+total_price;
+        }else if (total_price < 10000){
+            return "0"+total_price;
+        }else{
+            return ""+total_price;
+        }
+    }
+
+    private String stringChoice(int choice) {
+        if(choice<10){
+            return "0"+choice;
+        }
+        else{
+            return ""+choice;
+        }
     }
 
     private void getData(){
@@ -80,65 +135,13 @@ public class Order_NumActivity extends AppCompatActivity {
             choice = getIntent().getIntExtra("choice",0);
             amount = getIntent().getIntExtra("amount",10);
             total_price = getIntent().getIntExtra("total_price",99);
-            reserve_time = getIntent().getStringExtra("reserve_time");
             payNo = getIntent().getStringExtra("payNo");
             classify = getIntent().getStringExtra("classify");
+            reserve_time = getIntent().getStringExtra("reserve_time");
         }else{
-
+            Toast.makeText(this,"No data",Toast.LENGTH_SHORT).show();
         }
     }
-
-    class ConnectThread extends Thread{
-        @Override
-        public void run() {
-            try {
-                InetAddress serverAddr = InetAddress.getByName(ip);
-                socket = new Socket(serverAddr, port);
-
-                // 보낼 메시지
-                String sndMsg =
-                        "STX"
-                                +"MS06"
-                                +"00"
-                                +year+"-"+month(month)+"-"+day(day)
-                                +hour(hour)+":"+min(min)+":"+sec(sec)
-                                +"ID="+ShopActivity.member_id
-                                +"SHOP="+"군포점"
-                                +"COUNT="+"01"
-                                +"D01="+"카푸치노"
-                                +"D02="+"1"
-                                +"D03="+"01"
-                                +"D04="+"00"
-                                +"D05="+"00051"
-                                +"PRICE="+"000051"
-                                +"PAYNO="+"imp_921853162590"
-                                +"CLS="+classify
-                                +"MSG="+msg_func(classify)
-                                +"ETX";
-                Log.d("=============", sndMsg);
-
-                // 전송
-                PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(),"utf-16le")), true);
-                out.println(sndMsg);
-
-                // 수신
-                BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream(),"utf-16le"));
-                String read = input.readLine();
-                mHandler.post(new msgUpdate(read));
-                // 테스트용 : 화면출력
-                Log.d("=============", read);
-
-            }catch(Exception e){
-                e.printStackTrace();
-            }
-        }
-        public String msg_func(String classify){
-            if(classify.equals("2")){
-                return "14:00";
-            }else{
-                return "";
-            }
-        }
         private String month(int month) {
             String monthS = "";
             if(month<10){monthS = "0"+month;}
@@ -169,22 +172,17 @@ public class Order_NumActivity extends AppCompatActivity {
             else{secS = ""+sec;}
             return secS;
         }
-    }
 
-    class msgUpdate implements Runnable {
-        private String msg;
-        public msgUpdate(String str) {
-            this.msg = str;
+    public void backToShop(String read){
+        if(read.contains("STXMS0600")){
+            chatTv_request.setText("결제 완료");
+            finish();
         }
-        public void run() {
-            chatTv_request.setText(chatTv_request.getText().toString() + msg + "\n");
-            if(chatTv_request.getText().toString().contains("STXMS0600")){
-                finish();
-            }else if(chatTv_request.getText().toString().contains("STXMS0601")){
-                finish();
-            }else{
-                finish();
-            }
+        else if(read.contains("STXMS0601")){
+            chatTv_request.setText("네트워크 오류, 지점에 문의해주세요");
+        }
+        else{
+            chatTv_request.setText("네트워크 오류, 지점에 문의해주세요");
         }
     }
 }

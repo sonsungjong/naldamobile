@@ -3,12 +3,10 @@ package com.example.myapp;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Intent;
+import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.provider.ContactsContract;
-import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.view.WindowManager;
@@ -18,26 +16,11 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.net.InetAddress;
-import java.net.Socket;
-import java.util.Arrays;
-
 public class SignUpActivity extends AppCompatActivity {
 
+    public static Context mContext;
     private Handler mHandler;
-    Socket socket;
-//     실제 서버
-    private String ip = "210.114.12.66";
-    private int port = 1387;
-    // 내컴퓨터 테스트용
-//    private String ip = "192.168.0.60";
-//    private int port = 1001;
+
     EditText fullName;
     EditText password;
     EditText confirmPassword;
@@ -53,16 +36,17 @@ public class SignUpActivity extends AppCompatActivity {
     EditText birth;
     Button signUpBtn;
     TextView signUpTV;
+    String dataCount = "10";
+    int msg_flag = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_sign_up);
-
-
-
+        mContext = this;
         mHandler = new Handler();
+
         fullName = (EditText) findViewById(R.id.fullName);
         password = (EditText) findViewById(R.id.password);
         confirmPassword = (EditText) findViewById(R.id.confirmPassword);
@@ -77,6 +61,7 @@ public class SignUpActivity extends AppCompatActivity {
         birth = (EditText) findViewById(R.id.birth);
         signUpBtn = (Button) findViewById(R.id.signUpBtn);
         signUpTV = (TextView) findViewById(R.id.signUpTV);
+        msg_flag = -1;
 
         signUpBtn.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -121,58 +106,39 @@ public class SignUpActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "주민등륵번호 앞 6자리를 입력해주세요", Toast.LENGTH_SHORT).show();
                 }
                 else {
-                    ConnectThread th = new ConnectThread();
-                    th.start();
-
-//                    Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-//                    startActivity(intent);
-
+                    IntroActivity.MsgThread mt = new IntroActivity.MsgThread(
+                            "STX"+"MS01"+"00"+dataCount
+                                    +"D01="+fullName.getText().toString()
+                                    +"D02="+password.getText().toString()
+                                    +"D03="+Name.getText().toString()
+                                    +"D04="+genderS
+                                    +"D05="+mobileNumber.getText().toString()
+                                    +"D06="+address1.getText().toString()
+                                    +"D07="+address2.getText().toString()
+                                    +"D08="+post_code.getText().toString()
+                                    +"D09="+birth.getText().toString()
+                                    +"D10="+userEmailId.getText().toString()
+                                    +"ETX"
+                    );
+                    mt.start();
+                    if(msg_flag == 1){
+                        Toast.makeText(SignUpActivity.this, "중복된 아이디입니다", Toast.LENGTH_SHORT).show();
+                    }
+                    else if(msg_flag >1){
+                        Toast.makeText(SignUpActivity.this, "네트워크 오류", Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
         });
     }
 
-    class ConnectThread extends Thread{
-        String dataCount = "10";
-        @Override
-        public void run() {
-            try {
-                InetAddress serverAddr = InetAddress.getByName(ip);
-                socket = new Socket(serverAddr, port);
-
-                String sndMsg =
-                        "STX"
-                                +"MS01"
-                                +"00"
-                                +dataCount
-                                +"D01="+fullName.getText().toString()
-                                +"D02="+password.getText().toString()
-                                +"D03="+Name.getText().toString()
-                                +"D04="+genderS
-                                +"D05="+mobileNumber.getText().toString()
-                                +"D06="+address1.getText().toString()
-                                +"D07="+address2.getText().toString()
-                                +"D08="+post_code.getText().toString()
-                                +"D09="+birth.getText().toString()
-                                +"D10="+userEmailId.getText().toString()
-                                +"ETX";
-
-                Log.d("=============", sndMsg);
-                PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(),"utf-16le")), true);
-                out.println(sndMsg);
-
-                // 수신
-                BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream(),"utf-16le"));
-                String read = input.readLine();
-                mHandler.post(new msgUpdate(read));
-                // 테스트용 : 화면출력
-                Log.d("=============", read);
-
-                socket.close();
-            }catch(Exception e){
-                e.printStackTrace();
-            }
+    @Override
+    protected void onDestroy() {
+        if(msg_flag == 0){
+            Toast.makeText(SignUpActivity.this, "회원가입 성공", Toast.LENGTH_SHORT).show();
         }
+        else{}
+        super.onDestroy();
     }
 
     public void onRadioButtonClicked(View view){
@@ -191,28 +157,6 @@ public class SignUpActivity extends AppCompatActivity {
         }
     }
 
-    class msgUpdate implements Runnable {
-        private String msg;
-        public msgUpdate(String str) {
-            this.msg = str;
-        }
-        public void run() {
-            signUpTV.setText(signUpTV.getText().toString() + msg + "\n");
-            if((signUpTV.getText().toString()).contains("STXMS0100")){
-                Toast.makeText(getApplicationContext(), "회원가입 성공", Toast.LENGTH_SHORT).show();
-                finish();
-            }else if((signUpTV.getText().toString()).contains("STXMS0101")){
-                Toast.makeText(getApplicationContext(), "회원가입 실패", Toast.LENGTH_LONG).show();
-            }else if((signUpTV.getText().toString()).contains("STXMS0102")){
-                Toast.makeText(getApplicationContext(), "오류02", Toast.LENGTH_LONG).show();
-            }else if(signUpTV.getText().toString() == null || signUpTV.getText().toString().equals("")){
-                Toast.makeText(getApplicationContext(), "빈값", Toast.LENGTH_LONG).show();
-            }else{
-                Toast.makeText(getApplicationContext(), "서버오류 발생", Toast.LENGTH_LONG).show();
-            }
-        }
-    }
-
     // 하단바 없애기
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     @Override
@@ -226,6 +170,24 @@ public class SignUpActivity extends AppCompatActivity {
                             | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                             | View.SYSTEM_UI_FLAG_FULLSCREEN
                             | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+        }
+    }
+    public void signUpServer(String read){
+        if(read.contains("STXMS0100")){
+            msg_flag = 0;
+            finish();
+        }
+        else if(read.contains("STXMS0101")){
+            msg_flag = 1;
+            signUpTV.setText("중복된 아이디입니다");
+        }
+        else if(read.equals(null) || read.equals("")){
+            msg_flag = 2;
+            signUpTV.setText("빈값");
+        }
+        else{
+            msg_flag = 3;
+            signUpTV.setText("서버 오류발생");
         }
     }
 }

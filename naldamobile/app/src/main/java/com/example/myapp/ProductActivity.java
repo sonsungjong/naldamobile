@@ -3,10 +3,11 @@ package com.example.myapp;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
-import android.app.Fragment;
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -27,6 +28,7 @@ import com.example.myapp.ProductFragment.FragmentParent4;
 import com.example.myapp.ProductFragment.FragmentParent5;
 import com.example.myapp.adapter.ViewPagerAdapter;
 import com.google.android.material.tabs.TabLayout;
+import com.google.gson.Gson;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -47,6 +49,8 @@ public class ProductActivity extends AppCompatActivity{
     public static String member_id;
     public static String shop_name;
     public static String reserve_text;
+    public static Context mContext;
+    String menu_count, pdt_name, type, choice, amount, total_price, classify, reserve_time;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,9 +58,10 @@ public class ProductActivity extends AppCompatActivity{
         // 상태바 없애기
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_product);
+        mContext = this;
 //      인텐트로부터 데이터 받아오기
         getData();
-        setData();
+//        setData();
         toolbar = (Toolbar) findViewById(R.id.toolbar_product);
         setSupportActionBar(toolbar);
         // 뒤로가기 버튼
@@ -138,4 +143,123 @@ public class ProductActivity extends AppCompatActivity{
         }
     }
 
+    public void orderSuccess(String read){
+        int idx1, idx2, idx3, idx4, idx5, idx6, idx7, idx8, idxEnd;
+        Log.d("orderSuccess(): ",read);
+
+        if(read.contains("STXMS0400")){
+            // 주문확인 팝업으로 이동
+//                Intent intent1 = new Intent(getApplicationContext(), Order_PopupActivity.class);
+//                startActivityForResult(intent1, 1);
+
+            // 상품종류수 01
+            idx1 = read.indexOf("COUNT=");
+            // 상품이름 아메리카노
+            idx2 = read.indexOf("D01=");
+            // 상품 타입 HOT
+            idx3 = read.indexOf("D02=");
+            // 상품 수량 01
+            idx4 = read.indexOf("D03=");
+            // 샷추가 00
+            idx5 = read.indexOf("D04=");
+            // 해당상품 합계 가격 00000
+            idx6 = read.indexOf("D05=");
+            // 장바구니 전체 가격
+            idx7 = read.indexOf("PRICE=");
+            // 고객요청 메시지
+            idx8 = read.indexOf("MSG=");
+            //끝부분
+            idxEnd = read.indexOf("ETX");
+            menu_count = read.substring(idx1 +6, idx2);
+            pdt_name = read.substring(idx2 +4, idx3);
+            type = read.substring(idx3 +4, idx4);
+            choice = (read.substring(idx5 +4, idx6));
+            amount = read.substring(idx4 +4, idx5);
+            total_price = read.substring(idx6 +4, idx7);
+
+            Intent intent = new Intent(this, PaymentActivity.class);
+            intent.putExtra("member_id",ProductActivity.member_id);
+            intent.putExtra("shop_name",ProductActivity.shop_name);
+            intent.putExtra("menu_count",menu_count);
+            intent.putExtra("pdt_name",pdt_name);
+            intent.putExtra("type",type);
+            intent.putExtra("choice",Integer.parseInt(choice));
+            intent.putExtra("amount",Integer.parseInt(amount));
+            intent.putExtra("total_price",Integer.parseInt(total_price));
+            intent.putExtra("reserve_time","");
+            intent.putExtra("classify",1);
+            startActivity(intent);
+            finish();
+        }
+        else if(read.contains("STXMS0401")){
+//            Toast.makeText(mContext, "주문 실패", Toast.LENGTH_LONG).show();
+        }
+        else if(read.contains("STXMS0402")){
+//            Toast.makeText(mContext, "해당 제품이 품절되었습니다", Toast.LENGTH_LONG).show();
+        }
+        else if(read.equals(null) || read.equals("")){
+//            Toast.makeText(mContext, "빈값", Toast.LENGTH_LONG).show();
+        }
+        else{
+//            Toast.makeText(mContext, "서버 오류발생", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public void reserveSuccess(String read){
+        int idx1, idx2, idx3, idx4, idx5, idx6, idx7, idx8, idx9, idx10, idxEnd;
+        Log.d("reserveSuccess(): ",read);
+
+        if(read.contains("STXMS0500")){
+            // 상품종류수 01
+            idx1 = read.indexOf("COUNT=");
+            // 상품이름 아메리카노
+            idx2 = read.indexOf("D01=");
+            // 상품 타입 HOT
+            idx3 = read.indexOf("D02=");
+            // 상품 수량 01
+            idx4 = read.indexOf("D03=");
+            // 샷추가 00
+            idx5 = read.indexOf("D04=");
+            // 해당상품 합계 가격 00000
+            idx6 = read.indexOf("D05=");
+            // 장바구니 전체 가격
+            idx7 = read.indexOf("PRICE=");
+            // 고객요청 메시지
+            idx8 = read.indexOf("MSG=");
+            //끝부분
+            idxEnd = read.indexOf("ETX");
+            menu_count = read.substring(idx1 +6, idx2);
+            pdt_name = read.substring(idx2 +4, idx3);
+            type = read.substring(idx3 +4, idx4);
+            choice = (read.substring(idx5 +4, idx6));
+            amount = read.substring(idx4 +4, idx5);
+            total_price = read.substring(idx6 +4, idx7);
+            reserve_time = read.substring(22, 27);
+
+            Intent intent = new Intent(this, PaymentActivity.class);
+            intent.putExtra("shop_name",ProductActivity.shop_name);
+            intent.putExtra("menu_count",menu_count);
+            intent.putExtra("pdt_name", pdt_name);
+            intent.putExtra("type",type);
+            intent.putExtra("choice",Integer.parseInt(choice));
+            intent.putExtra("amount",Integer.parseInt(amount));
+            intent.putExtra("total_price",Integer.parseInt(total_price));
+            intent.putExtra("reserve_time",reserve_time);
+            intent.putExtra("classify",2);
+            startActivity(intent);
+            finish();
+        }
+        else if(read.contains("STXMS0501")){
+//            Toast.makeText(mContext, "예약 실패", Toast.LENGTH_LONG).show();
+        }
+        else if(read.contains("STXMS0502")){
+//            Toast.makeText(mContext, "같은 시간에 예약이 존재합니다", Toast.LENGTH_LONG).show();
+        }
+        else if(read.equals(null) || read.equals("")){
+//            Toast.makeText(mContext, "빈값", Toast.LENGTH_LONG).show();
+        }
+        else{
+//            Toast.makeText(mContext, "서버 오류발생", Toast.LENGTH_LONG).show();
+        }
+    }
 }
