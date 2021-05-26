@@ -1,4 +1,4 @@
-package com.example.myapp;
+ package com.example.myapp;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -32,12 +32,12 @@ public class IntroActivity extends AppCompatActivity {
     private static int SPLASH_SCREEN = 2000;
     public static Handler mHandler;
     public static Socket socket;
+    // ABIServer 실제
     public String ip = "210.114.12.66";
     public int port = 1387;
     // 내컴퓨터용
-//    public String ip = "192.168.0.60";
-//    public int port = "1001";
-
+//    public String ip = "192.168.0.22";
+//    public int port = 1387;     // ABIServer 테스트
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -109,7 +109,7 @@ public class IntroActivity extends AppCompatActivity {
                 String read = input.readLine();
                 mHandler.post(new MsgUpdate(read));
                 Log.d("=============", read);
-
+                // read : 받은 메시지
                 // 로그인
                 if(read.contains("STXMS02") && sndMsg.contains("STXMS02")){
                     ((LoginActivity)LoginActivity.mContext).goShop(read);
@@ -118,6 +118,14 @@ public class IntroActivity extends AppCompatActivity {
                 else if(read.contains("STXMS01") && sndMsg.contains("STXMS01")){
                     ((SignUpActivity)SignUpActivity.mContext).signUpServer(read);
                 }
+                // 장바구니 주문요청
+                /*else if(read.contains("STXMS04") && sndMsg.contains("STXMS04") && sndMsg.contains("_cart:")){
+                    ((CartActivity)CartActivity.mContext).orderSuccess(read+sndMsg.substring(sndMsg.indexOf("COUNT="),sndMsg.indexOf("ETX")));
+                }
+                // 장바구니 예약요청
+                else if(read.contains("STXMS05") && sndMsg.contains("STXMS05") && sndMsg.contains("_cart:")){
+                    ((CartActivity)CartActivity.mContext).reserveSuccess(read+sndMsg.substring(sndMsg.indexOf("STXMS05")+9,sndMsg.indexOf("ETX")));
+                }*/
                 // 주문요청
                 else if(read.contains("STXMS04") && sndMsg.contains("STXMS04")){
                     ((ProductActivity)ProductActivity.mContext).orderSuccess(read+sndMsg.substring(sndMsg.indexOf("COUNT="),sndMsg.indexOf("ETX")));
@@ -128,7 +136,7 @@ public class IntroActivity extends AppCompatActivity {
                 }
                 // 결제요청
                 else if(read.contains("STXMS06") && sndMsg.contains("STXMS06")){
-                    ((Order_NumActivity)Order_NumActivity.mContext).backToShop(read);
+                    ((PaymentActivity)PaymentActivity.mContext).backToShop(read);
                 }
                 // 결제리스트 요청
                 else if(read.contains("STXMS07") && sndMsg.contains("STXMS07")){
@@ -138,7 +146,6 @@ public class IntroActivity extends AppCompatActivity {
                 else if(read.contains("STXMS08") && sndMsg.contains("STXMS08")){
                     ((HistoryActivity)HistoryActivity.mContext).requestDetailInfo(read);
                 }
-
             }catch(Exception e){
                 e.printStackTrace();
             }

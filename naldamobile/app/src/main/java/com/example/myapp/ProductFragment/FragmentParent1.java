@@ -1,11 +1,9 @@
 package com.example.myapp.ProductFragment;
 
 import android.app.TimePickerDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,25 +13,17 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
-import com.example.myapp.BasketActivity;
+import com.example.myapp.CartActivity;
 import com.example.myapp.IntroActivity;
-import com.example.myapp.PaymentActivity;
 import com.example.myapp.ProductActivity;
 import com.example.myapp.R;
+import com.example.myapp.ShopActivity;
 import com.example.myapp.adapter.ProductImageAdapter;
 import com.example.myapp.model.ProductImageModel;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.net.InetAddress;
-import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -57,6 +47,7 @@ public class FragmentParent1 extends Fragment {
     int shotCnt = 0;
     int amountCnt = 1;
     public String menu_count = "01";
+    int pdt_image = R.drawable.pdt_coffee_1;
     String pdt_name = "아메리카노";
     String pdt_price = "2500";
     int total_price = Integer.parseInt(pdt_price);
@@ -112,7 +103,8 @@ public class FragmentParent1 extends Fragment {
         models = new ArrayList<>();
         models.add(new ProductImageModel(R.drawable.pdt_coffee_1, "아메리카노", "2500"));
         models.add(new ProductImageModel(R.drawable.pdt_coffee_2, "카페라떼", "3300"));
-        models.add(new ProductImageModel(R.drawable.pdt_coffee_3, "카푸치노", "3300"));
+//        models.add(new ProductImageModel(R.drawable.pdt_coffee_3, "카푸치노", "3300"));
+        models.add(new ProductImageModel(R.drawable.pdt_coffee_3, "카푸치노", "100"));
         models.add(new ProductImageModel(R.drawable.pdt_coffee_4, "바닐라라떼", "3300"));
         models.add(new ProductImageModel(R.drawable.pdt_coffee_5, "카라멜마끼아또", "3800"));
         models.add(new ProductImageModel(R.drawable.pdt_coffee_6, "카페모카", "3800"));
@@ -135,7 +127,7 @@ public class FragmentParent1 extends Fragment {
                         "STX"
                                 +"MS04"
                                 +"00"
-                                +"ID="+ProductActivity.member_id
+                                +"ID="+ ShopActivity.member_id
                                 +"SHOP="+ProductActivity.shop_name
                                 +"COUNT="+menu_count
                                 +"D01="+pdt_name
@@ -170,7 +162,7 @@ public class FragmentParent1 extends Fragment {
                                 +"00"
                                 +year+"-"+reserve_month(month)+"-"+reserve_day(day)
                                 +reserve_hour+":"+reserve_minute
-                                +"ID="+ProductActivity.member_id
+                                +"ID="+ShopActivity.member_id
                                 +"SHOP="+ProductActivity.shop_name
                                 +"COUNT="+menu_count
                                 +"D01="+pdt_name
@@ -179,7 +171,9 @@ public class FragmentParent1 extends Fragment {
                                 +"D04="+shotCnt(shotCnt)
                                 +"D05="+total_price(total_price)
                                 +"PRICE="+basket_total_price(Integer.parseInt(total_price(total_price)))
-                                +"ETX");
+                                +"MSG="+""
+                                +"ETX"
+                            );
                             mt.start();
                     }
                 }, hour, min, false);
@@ -187,26 +181,45 @@ public class FragmentParent1 extends Fragment {
                 timePickerDialog.show();
             }
         });
-        // 장바구니 버튼
+        // 장바구니 담기 버튼
         addCart_f1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getActivity().finish();
-//                String title = pdt_name;
-//                String price = pdt_price;
-//                String type = typeText_f1.getText().toString().trim();
-//                String quantity = amountText_f1.getText().toString().trim();
-//                String shot = shotText_f1.getText().toString().trim();
-//
-//                //add to db(SQLite)
-//                addToCart(productId, title, price, type, quantity, shot);
+                String cartKey = typeCnt+pdt_name+shotCnt;
+                int cartPay = (Integer.parseInt(pdt_price)) + (shotCnt*500) + typePrice(typeCnt);
+                int i = 0;
+                    for (i=0;i<ProductActivity.cartKey.size();i++){
+                        if(cartKey.equals(ProductActivity.cartKey.get(i).toString())){
+                            ProductActivity.cartFlag = i;   // 중복 플래그 작동
+                            break;
+                        }
+                    }
+                    // 장바구니 중복
+                if(ProductActivity.cartFlag != 0 && ProductActivity.cartFlag == i){
+                    int intCartAmount = ProductActivity.cartAmount.get(i);
+                    ProductActivity.cartAmount.set(i,amountCnt+intCartAmount);
+                    ProductActivity.cartFlag = 0;   // 중복 플래그 해제
+                }else{
+                    ProductActivity.cartMenuCount++;
+                    ProductActivity.cartKey.add(typeCnt + pdt_name + shotCnt);
+                    ProductActivity.cartImg.add(pdt_image);
+                    ProductActivity.cartPdtName.add(pdt_name);
+                    ProductActivity.cartChoice.add(typeCntNumber(typeCnt));
+                    ProductActivity.cartAmount.add(amountCnt);
+                    ProductActivity.cartShot.add(shotCnt);
+                    ProductActivity.cartPay.add(cartPay);   // 개당 가격 (amount 곱해줘야됨)
+                }
+                Toast.makeText(getContext(), pdt_name+"("+amountCnt+") 장바구니 추가", Toast.LENGTH_SHORT).show();
+                // Notification 메시지 숫자에 +=amountCnt 누적합
             }
         });
+
         // 초기화 버튼
         cancel_f1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getActivity().finish();
+                Intent intent = new Intent(getActivity(), CartActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -217,12 +230,13 @@ public class FragmentParent1 extends Fragment {
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
             }
-
+            // 스크롤시마다 제품정보 변경
             @Override
             public void onPageSelected(int position) {
                 typeCnt = "HOT";
                 amountCnt = 1;
                 shotCnt = 0;
+                pdt_image = models.get(position).getImage();
                 pdt_name = models.get(position).getTitle();
                 pdt_price = models.get(position).getDesc();
                 typeText_f1.setText(typeCnt);
@@ -286,10 +300,10 @@ public class FragmentParent1 extends Fragment {
                 if(amountCnt <= 1){amountCnt = 1;}
                 else {amountCnt--;
                     if(typeCnt == "HOT") {
-                        total_price = total_price - Integer.parseInt(pdt_price);
+                        total_price = total_price - (Integer.parseInt(pdt_price) +shotCnt*500);
                     }
                     else if(typeCnt == "ICE"){
-                        total_price = total_price - (Integer.parseInt(pdt_price)+500);
+                        total_price = total_price - ((Integer.parseInt(pdt_price)+500) +(shotCnt*500));
                     }
                     price1_f1.setText("가격 : "+(total_price)+" 원");
                 }
@@ -303,10 +317,10 @@ public class FragmentParent1 extends Fragment {
                 if(amountCnt>=99){amountCnt = 99;}
                 else {amountCnt++;
                     if(typeCnt == "HOT"){
-                        total_price = total_price +Integer.parseInt(pdt_price);
+                        total_price = total_price +Integer.parseInt(pdt_price) +(shotCnt*500);
                     }
                     else if(typeCnt == "ICE"){
-                        total_price = total_price +(Integer.parseInt(pdt_price)+500);
+                        total_price = total_price +(Integer.parseInt(pdt_price)+500) + (shotCnt*500);
                     }
                     price1_f1.setText("가격 : "+(total_price)+" 원");
                 }
@@ -319,7 +333,7 @@ public class FragmentParent1 extends Fragment {
             public void onClick(View v) {
                 if(shotCnt <= 0){shotCnt = 0;}
                 else {shotCnt--;
-                    total_price = total_price - 500;
+                    total_price = total_price - (amountCnt*500);
                     price1_f1.setText("가격 : "+(total_price)+" 원");
                 }
                 shotText_f1.setText(""+shotCnt);
@@ -329,9 +343,10 @@ public class FragmentParent1 extends Fragment {
         shotUp_f1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(shotCnt>=99){shotCnt = 99;}
+                // 3 으로 되돌리기 (커피, 라떼)
+                if(shotCnt>=3){shotCnt = 3;}
                 else {shotCnt++;
-                    total_price = total_price + 500;
+                    total_price = total_price + (amountCnt*500);
                     price1_f1.setText("가격 : "+(total_price)+" 원");
                 }
                 shotText_f1.setText(""+shotCnt);
@@ -387,6 +402,16 @@ public class FragmentParent1 extends Fragment {
                 typeNum = 1;
             }else if(typeCnt == "ICE"){
                 typeNum = 2;
+            }else{
+                typeNum = 0;
+            }
+            return typeNum;
+        }
+        // 장바구니용 하나의 제품의 개당 가격계산용
+        private int typePrice(String typeCnt){
+            int typeNum;
+            if(typeCnt == "ICE"){
+                typeNum = 500;
             }else{
                 typeNum = 0;
             }
@@ -470,32 +495,5 @@ public class FragmentParent1 extends Fragment {
         if(sec<10){secR = "0"+sec;}
         else{secR = ""+sec;}
         return secR;
-    }
-
-        private void addToCart(String productId, String title, String price, String type, String quantity, String shot){
-        itemId++;
-
-        EasyDB easyDB = EasyDB.init(getContext(), "ITEMS_DB")
-                .setTableName("ITEMS_TABLE")
-                .addColumn(new Column("Item_Id", new String[]{"text","unique"}))
-                .addColumn(new Column("Item_PID", new String[]{"text","not null"}))
-                .addColumn(new Column("Item_Title", new String[]{"text","not null"}))
-                .addColumn(new Column("Item_Price", new String[]{"text","not null"}))
-                .addColumn(new Column("Item_Type", new String[]{"text","not null"}))
-                .addColumn(new Column("Item_Quantity", new String[]{"text","not null"}))
-                .addColumn(new Column("Item_Shot", new String[]{"text","not null"}))
-                .doneTableColumn();
-
-        Boolean b = easyDB
-                .addData("Item_Id",itemId)
-                .addData("Item_PID",productId)
-                .addData("Item_Title",title)
-                .addData("Item_Price",price)
-                .addData("Item_Type",type)
-                .addData("Item_Quantity",quantity)
-                .addData("Item_Shot",shot)
-                .doneDataAdding();
-
-        Toast.makeText(getContext(), "장바구니 추가", Toast.LENGTH_SHORT).show();
     }
 }

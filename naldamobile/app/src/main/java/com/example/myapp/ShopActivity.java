@@ -33,6 +33,9 @@ import java.net.Socket;
 public class ShopActivity extends AppCompatActivity {
 
     public static String member_id;
+    public static String member_phone;
+    public static String member_email;
+    public static String member_name;
 
     DrawerLayout drawerLayout;
     Toolbar toolbar;
@@ -54,7 +57,6 @@ public class ShopActivity extends AppCompatActivity {
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.navigationView);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
-
 
         toolbar = (Toolbar) findViewById(R.id.toolbar_id);
         setSupportActionBar(toolbar);
@@ -93,7 +95,8 @@ public class ShopActivity extends AppCompatActivity {
                 return true;
             }
         });
-    }
+        IntroActivity.intro_Ll.setBackgroundResource(R.drawable.bye); //아웃트로
+    }   // onCreate()
 
     public void logout(View view){
         Intent intent = new Intent(this, LoginActivity.class);
@@ -104,7 +107,7 @@ public class ShopActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        IntroActivity.intro_Ll.setBackgroundResource(R.drawable.bye); //아웃트로
+//        IntroActivity.intro_Ll.setBackgroundResource(R.drawable.bye); //아웃트로
     }
 
     @Override

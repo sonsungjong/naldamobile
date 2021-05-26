@@ -2,12 +2,14 @@ package com.example.myapp;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.os.Handler;
 import android.view.WindowManager;
 import android.webkit.WebView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.iamport.sdk.data.sdk.IamPortRequest;
@@ -23,6 +25,8 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.Locale;
 
 import kotlin.Unit;
 
@@ -31,36 +35,42 @@ public class PaymentActivity extends AppCompatActivity {
     // orderNum 혹은 reserveResult 쪽에서 소켓으로 결제완료메시지 보내기
     // PaymentActivity 없애고 Product Fragment쪽에서 직접 결제하게하기
     // 장바구니에서 직접처리하게 하기
-
-    String menu_count, type, shop_name, pdt_name;
+    public static Context mContext;
+    TextView chatTvPay;
+    String menu_count, type1, shop_name, pdt_name1, pdtNameInfo, pdtInfo, cart_msg;
     String payNo = "", reserve_time = "";
-    int choice, amount, total_price;
-    int classify;
+    int choice1, amount1, total_price, classify, menu_count_num;
+    Calendar cal = new GregorianCalendar(Locale.KOREA);
+    int year = cal.get(Calendar.YEAR);
+    int month = cal.get(Calendar.MONTH)+1;
+    int day = cal.get(Calendar.DAY_OF_MONTH);
+    int hour = cal.get(Calendar.HOUR_OF_DAY);
+    int min = cal.get(Calendar.MINUTE);
+    int sec = cal.get(Calendar.SECOND);
+    PayMethod payMethod = PayMethod.phone;
+    String pg = "html5_inicis";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //      상태바 없애기
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_payment);
+        mContext = this;
         getData();
+        menu_count_num = Integer.parseInt(menu_count);
+        getPdtName(pdtInfo);
+
+        chatTvPay = (TextView) findViewById(R.id.chatTv_pay);
         Iamport.INSTANCE.init(this);
-
-
-//        mHandler = new Handler();
-
-        // 액션바를 얻어와서 hide로 숨김 : NoActionBar와 곂쳐서 오류
-//        ActionBar actionBar = getSupportActionBar();
-//        actionBar.hide();
 
         IamPortRequest request
                 = IamPortRequest.builder()
 //                html5_inicis: 이니시스웹표준, kakaopay: 카카오페이, chai: 차이페이
-                .pg("html5_inicis")
+                .pg(pg)
 //                PayMethod.card: 카드, .phone: 휴대폰소액결제, .samsung: 삼성페이, .vbank: 가상계좌
-                .pay_method(PayMethod.card)
+                .pay_method(PayMethod.phone)
 //                제품명
-                .name(pdt_name)
+                .name(pdtNameInfo)
 //                merchant_uid : 가맹점 관리 고유번호, 1970 년 1 월 1 일 00:00:00 GTM 이후의 밀리 초 수를 반환 (다른 형식으로 변경가능)
                 .merchant_uid("mid_" + (new Date()).getTime())
 //                가격
@@ -84,8 +94,22 @@ public class PaymentActivity extends AppCompatActivity {
 //                        결제 성공시
                         payNo = iamPortResponse.getImp_uid();
 
-                        Intent intent = new Intent(this, Order_NumActivity.class);
-                        intent.putExtra("shop_name",shop_name);
+                        IntroActivity.MsgThread mt = new IntroActivity.MsgThread(
+                                "STX"+"MS06"+"00"
+                                        +year+"-"+month(month)+"-"+day(day)
+                                        +hour(hour)+":"+min(min)+":"+sec(sec)
+                                        +"ID="+ShopActivity.member_id
+                                        +"SHOP="+shop_name
+                                        +"COUNT="+menu_count
+                                        +pdtInfo
+                                        +"PRICE="+final_string_total_price(total_price)
+                                        +"PAYNO="+payNo
+                                        +"CLS="+classify
+                                        +"MSG="+reserve_time
+                                        +"ETX"
+                        );
+                        mt.start();
+                        /*intent.putExtra("shop_name",shop_name);
                         intent.putExtra("menu_count",menu_count);
                         intent.putExtra("pdt_name",pdt_name);
                         intent.putExtra("type",type);
@@ -94,12 +118,9 @@ public class PaymentActivity extends AppCompatActivity {
                         intent.putExtra("payNo",payNo);
                         intent.putExtra("total_price",total_price);
                         intent.putExtra("classify",classify);
-                        intent.putExtra("reserve_time", reserve_time);
-                        startActivity(intent);
-                        finish();
+                        intent.putExtra("reserve_time", reserve_time);*/
                     }else if(iamPortResponse.getImp_success() == false){
-//                        결제 취소시
-                        this.finish();
+//                        결제 취소시 취소한 화면 생성 + 뒤로가는 버튼
                     }
                     return Unit.INSTANCE;
                 });
@@ -115,15 +136,124 @@ public class PaymentActivity extends AppCompatActivity {
         if(getIntent().hasExtra("classify")){
             shop_name = getIntent().getStringExtra("shop_name");
             menu_count = getIntent().getStringExtra("menu_count");
-            pdt_name = getIntent().getStringExtra("pdt_name");
+            pdtInfo = getIntent().getStringExtra("pdtInfo");
+            total_price = getIntent().getIntExtra("total_price",999999);
+            reserve_time = getIntent().getStringExtra("reserve_time");
+            cart_msg = getIntent().getStringExtra("cart_msg");
+            classify = getIntent().getIntExtra("classify",1);
+
+            /*pdt_name = getIntent().getStringExtra("pdt_name");
             type = getIntent().getStringExtra("type");
             choice = getIntent().getIntExtra("choice",0);
-            amount = getIntent().getIntExtra("amount",10);
-            total_price = getIntent().getIntExtra("total_price",99);
-            classify = getIntent().getIntExtra("classify",0);
-            reserve_time = getIntent().getStringExtra("reserve_time");
+            amount = getIntent().getIntExtra("amount",10);*/
         }else{
             Toast.makeText(this,"No data",Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void getPdtName(String pdtInfo) {
+        int idxD01 = pdtInfo.indexOf("D01=");
+        int idxD02 = pdtInfo.indexOf("D02=");
+
+        if(menu_count_num == 1){
+            pdtNameInfo = pdtInfo.substring(idxD01 + 4, idxD02);
+        }else {
+            pdtNameInfo = pdtInfo.substring(idxD01 + 4, idxD02) + " 외 " + (menu_count_num - 1) + "건";
+        }
+    }
+
+    private String final_string_total_price(int total_price) {
+        if(total_price <1){
+            return "000000";
+        }else if(total_price < 10){
+            return "00000"+total_price;
+        }else if(total_price<100){
+            return "0000"+total_price;
+        }else if (total_price < 1000){
+            return "000"+total_price;
+        }else if (total_price < 10000){
+            return "00"+total_price;
+        }else if(total_price < 100000){
+            return "0"+total_price;
+        }else{
+            return ""+total_price;
+        }
+    }
+
+    private String string_total_price(int total_price) {
+        if(total_price <1){
+            return "00000";
+        }else if(total_price < 10){
+            return "0000"+total_price;
+        }else if(total_price<100){
+            return "000"+total_price;
+        }else if (total_price < 1000){
+            return "00"+total_price;
+        }else if (total_price < 10000){
+            return "0"+total_price;
+        }else{
+            return ""+total_price;
+        }
+    }
+
+    private String stringChoice(int choice) {
+        if(choice<10){
+            return "0"+choice;
+        }
+        else{
+            return ""+choice;
+        }
+    }
+
+    private String month(int month) {
+        String monthS = "";
+        if(month<10){monthS = "0"+month;}
+        else{monthS = ""+month;}
+        return monthS;
+    }
+    private String day(int day) {
+        String dayS = "";
+        if(day<10){dayS = "0"+day;}
+        else{dayS = ""+day;}
+        return dayS;
+    }
+    private String hour(int hour) {
+        String hourS = "";
+        if(hour<10){hourS = "0"+hour;}
+        else{hourS = ""+hour;}
+        return hourS;
+    }
+    private String min(int min) {
+        String minS = "";
+        if(min<10){minS = "0"+min;}
+        else{minS = ""+min;}
+        return minS;
+    }
+    private String sec(int sec) {
+        String secS = "";
+        if(sec<10){secS = "0"+sec;}
+        else{secS = ""+sec;}
+        return secS;
+    }
+    private String intToTwoString(int num){
+        String str = "";
+        if(num<10){str = "0"+num;}
+        else{str = ""+num;}
+        return str;
+    }
+
+    public void backToShop(String read){
+        if(read.contains("STXMS0600")){
+            Intent intent = new Intent(this, Order_NumActivity.class);
+            intent.putExtra("MS06MSG", read);
+            startActivity(intent);
+            finish();
+        }
+        else if(read.contains("STXMS0601")){
+            chatTvPay.setText("네트워크 오류, 지점에 문의해주세요");
+        }
+        else{
+            chatTvPay.setText("네트워크 오류, 지점에 문의해주세요");
         }
     }
 }

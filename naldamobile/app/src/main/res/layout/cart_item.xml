@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="12dp"
+    android:padding="8dp"
+    android:layout_margin="8dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+
+        <ImageView
+            android:id="@+id/pdt_image"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:adjustViewBounds="true"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/pdt_coffee_1"
+            />
+
+        <TextView
+            android:id="@+id/pdt_type"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="(ICE)"
+            android:textColor="#091020"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/pdt_image"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.15" />
+
+        <TextView
+            android:id="@+id/pdt_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="아메리카노"
+            android:textColor="#091020"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/pdt_type"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.15" />
+
+        <TextView
+            android:id="@+id/pdt_shot"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="end"
+            android:text="shot : 0"
+            app:layout_constraintEnd_toEndOf="@+id/pdt_name"
+            app:layout_constraintTop_toBottomOf="@+id/pdt_name" />
+
+        <ImageView
+            android:id="@+id/minus_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+
+            android:src="@drawable/ic_baseline_indeterminate_check_box_24"
+
+            app:layout_constraintBottom_toTopOf="@+id/pdt_pay"
+            app:layout_constraintStart_toEndOf="@+id/pdt_image" />
+
+        <TextView
+            android:id="@+id/txt_quantity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:gravity="bottom"
+            android:text="1"
+            android:textSize="20sp"
+
+            app:layout_constraintBottom_toTopOf="@+id/pdt_pay"
+            app:layout_constraintStart_toEndOf="@+id/minus_btn" />
+
+        <ImageView
+            android:id="@+id/plus_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="8dp"
+            android:src="@drawable/ic_baseline_add_box_24"
+            app:layout_constraintBottom_toTopOf="@+id/pdt_pay"
+            app:layout_constraintStart_toEndOf="@+id/txt_quantity" />
+
+        <TextView
+            android:id="@+id/pdt_pay"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="가격 : 1500 원"
+            android:textColor="#2277D1"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toBottomOf="@+id/pdt_image"
+            app:layout_constraintEnd_toEndOf="@+id/pdt_shot"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toEndOf="@+id/pdt_image" />
+
+        <Button
+            android:id="@+id/delete_btn"
+            android:layout_width="50dp"
+            android:layout_height="75dp"
+            android:backgroundTint="#ff0000"
+            android:text="X"
+            android:textSize="18dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.cardview.widget.CardView>

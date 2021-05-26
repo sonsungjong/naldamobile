@@ -3,22 +3,18 @@ package com.example.myapp;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
-import android.app.TimePickerDialog;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.example.myapp.ProductFragment.FragmentParent1;
@@ -28,29 +24,31 @@ import com.example.myapp.ProductFragment.FragmentParent4;
 import com.example.myapp.ProductFragment.FragmentParent5;
 import com.example.myapp.adapter.ViewPagerAdapter;
 import com.google.android.material.tabs.TabLayout;
-import com.google.gson.Gson;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.net.InetAddress;
-import java.net.Socket;
-import java.util.Calendar;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
 public class ProductActivity extends AppCompatActivity{
 
+    public static String shop_name, reserve_text;   // 가게이름, 예약가능여부
+    public static Context mContext;
+    public static int cartMenuCount = 0, cartFlag = 0;
+    public static List<String> cartKey;     // 초이스+이름+샷
+    public static List<String> cartPdtName; // 이름
+    public static List<Integer> cartChoice; // normal,hot,ice : 0, 1, 2
+    public static List<Integer> cartAmount; // 2
+    public static List<Integer> cartShot;   // 2
+    public static List<Integer> cartPay;   // 8000 개당 가격 (amount만 곱해줘야함, type과 shot은 적용된 개당 가격)
+    public static List<Integer> cartImg;
+
+    String menu_count, pdt_name, type, choice, amount, total_price, reserve_time, cart_msg, pdtInfo;
+    int classify;   // 모바일주문/모바일예약 구분 플래그
     Toolbar toolbar;
     TabLayout tabLayout;
     ViewPager viewPager;
     TextView toolbarProductTitle;
-
-    public static String member_id;
-    public static String shop_name;
-    public static String reserve_text;
-    public static Context mContext;
-    String menu_count, pdt_name, type, choice, amount, total_price, classify, reserve_time;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +59,15 @@ public class ProductActivity extends AppCompatActivity{
         mContext = this;
 //      인텐트로부터 데이터 받아오기
         getData();
+        cartPdtName = new ArrayList<>();
+        cartChoice = new ArrayList<>();
+        cartAmount = new ArrayList<>();
+        cartShot = new ArrayList<>();
+        cartPay = new ArrayList<>();
+        cartKey = new ArrayList<>();
+        cartImg = new ArrayList<>();
+        cartFlag = 0;
+        cartMenuCount = 0;
 //        setData();
         toolbar = (Toolbar) findViewById(R.id.toolbar_product);
         setSupportActionBar(toolbar);
@@ -117,7 +124,6 @@ public class ProductActivity extends AppCompatActivity{
     private void getData(){
         if(getIntent().hasExtra("shop_name")){
             shop_name = getIntent().getStringExtra("shop_name");
-            member_id = getIntent().getStringExtra("member_id");
             reserve_text = getIntent().getStringExtra("reserve_text");
         }else{
             Toast.makeText(this,"No data",Toast.LENGTH_SHORT).show();
@@ -171,23 +177,24 @@ public class ProductActivity extends AppCompatActivity{
             //끝부분
             idxEnd = read.indexOf("ETX");
             menu_count = read.substring(idx1 +6, idx2);
-            pdt_name = read.substring(idx2 +4, idx3);
+            pdtInfo = read.substring(idx2, idx7);
+            /*pdt_name = read.substring(idx2 +4, idx3);
             type = read.substring(idx3 +4, idx4);
             choice = (read.substring(idx5 +4, idx6));
-            amount = read.substring(idx4 +4, idx5);
-            total_price = read.substring(idx6 +4, idx7);
+            amount = read.substring(idx4 +4, idx5);*/
+//            total_price = read.substring(idx6 +4, idx7);
+            total_price = read.substring(idx7+6, idx8);
+            cart_msg = "";
+            classify = 1;
 
             Intent intent = new Intent(this, PaymentActivity.class);
-            intent.putExtra("member_id",ProductActivity.member_id);
             intent.putExtra("shop_name",ProductActivity.shop_name);
             intent.putExtra("menu_count",menu_count);
-            intent.putExtra("pdt_name",pdt_name);
-            intent.putExtra("type",type);
-            intent.putExtra("choice",Integer.parseInt(choice));
-            intent.putExtra("amount",Integer.parseInt(amount));
+            intent.putExtra("pdtInfo", pdtInfo);
             intent.putExtra("total_price",Integer.parseInt(total_price));
             intent.putExtra("reserve_time","");
-            intent.putExtra("classify",1);
+            intent.putExtra("cart_msg", cart_msg);
+            intent.putExtra("classify",classify);
             startActivity(intent);
             finish();
         }
@@ -229,23 +236,25 @@ public class ProductActivity extends AppCompatActivity{
             //끝부분
             idxEnd = read.indexOf("ETX");
             menu_count = read.substring(idx1 +6, idx2);
-            pdt_name = read.substring(idx2 +4, idx3);
+            pdtInfo = read.substring(idx2, idx7);
+            /*pdt_name = read.substring(idx2 +4, idx3);
             type = read.substring(idx3 +4, idx4);
             choice = (read.substring(idx5 +4, idx6));
-            amount = read.substring(idx4 +4, idx5);
+            amount = read.substring(idx4 +4, idx5);*/
+//            total_price = read.substring(idx7, idx8);
             total_price = read.substring(idx6 +4, idx7);
+            cart_msg = "";
             reserve_time = read.substring(22, 27);
+            classify = 2;
 
             Intent intent = new Intent(this, PaymentActivity.class);
             intent.putExtra("shop_name",ProductActivity.shop_name);
             intent.putExtra("menu_count",menu_count);
-            intent.putExtra("pdt_name", pdt_name);
-            intent.putExtra("type",type);
-            intent.putExtra("choice",Integer.parseInt(choice));
-            intent.putExtra("amount",Integer.parseInt(amount));
+            intent.putExtra("pdtInfo",pdtInfo);
             intent.putExtra("total_price",Integer.parseInt(total_price));
             intent.putExtra("reserve_time",reserve_time);
-            intent.putExtra("classify",2);
+            intent.putExtra("cart_msg", cart_msg);
+            intent.putExtra("classify",classify);
             startActivity(intent);
             finish();
         }

@@ -34,6 +34,7 @@ public class LoginActivity extends AppCompatActivity {
 
     TextView chatTV;
     public EditText ID;
+    String name, phone, email;
     EditText Password;
     Button requestLogin;
     ImageView login_clogo;
@@ -63,6 +64,7 @@ public class LoginActivity extends AppCompatActivity {
         intro = (IntroActivity) IntroActivity.intro_activity; // 객체를 만든다.
         msg_flag = -1;
 
+        // 로그인 버튼을 눌렀을때
         requestLogin.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
@@ -127,17 +129,25 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         if(msg_flag == 0){
-            Toast.makeText(mContext, ID.getText().toString()+"님 안녕하세요!", Toast.LENGTH_LONG).show();
+            Toast.makeText(mContext, ID.getText().toString()+"님 안녕하세요!", Toast.LENGTH_SHORT).show();
         }
         super.onDestroy();
     }
 
     public void goShop(String read){
         if(read.contains("STXMS0200")){
-            chatTV.setText("로그인 성공");
+            // 서버 작업 후 풀기
+//            saveMemberInfo(read);
+            chatTV.setText("로그인 중입니다");
             msg_flag = 0;
             Intent intent = new Intent(this, ShopActivity.class);
             intent.putExtra("member_id",ID.getText().toString());
+            // 서버 작업 후 풀기
+            /*
+            intent.putExtra("member_name",name);
+            intent.putExtra("member_email",email);
+            intent.putExtra("member_phone",phone);
+            */
             startActivity(intent);
             finish();
         }
@@ -157,5 +167,16 @@ public class LoginActivity extends AppCompatActivity {
             chatTV.setText("서버 오류");
             msg_flag = 4;
         }
+    }
+
+    // name, phone, email 정보를 파싱해서 변수에 저장
+    private void saveMemberInfo(String receive){
+        int idxName = receive.indexOf("NAME=");
+        int idxEmail = receive.indexOf("EMAIL=");
+        int idxPhone = receive.indexOf("PHONE=");
+        int idxEnd = receive.indexOf("ETX");
+        name = receive.substring(idxName+5, idxEmail);
+        email = receive.substring(idxEmail+6, idxPhone);
+        phone = receive.substring(idxPhone+6, idxEnd);
     }
 }
