@@ -7,9 +7,24 @@
     tools:context=".PaymentActivity">
 
     <TextView
-        android:textColor="@color/black"
         android:id="@+id/chatTv_pay"
+        android:textColor="@color/black"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
+
+    <Button
+        android:id="@+id/close_payment"
+        android:onClick="btnClosePayment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="24dp"
+        android:textColor="@color/white"
+        android:visibility="invisible"
+        android:text="HOME"
+        android:backgroundTint="@color/white"
+        android:textSize="24sp"
+        />
 
 </RelativeLayout>

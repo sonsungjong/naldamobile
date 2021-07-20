@@ -41,7 +41,6 @@ public class ShopActivity extends AppCompatActivity {
     Toolbar toolbar;
     TabLayout tabLayout;
     ViewPager viewPager;
-    Socket socket;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -136,6 +135,9 @@ public class ShopActivity extends AppCompatActivity {
     private void getData(){
         if(getIntent().hasExtra("member_id")){
             member_id = getIntent().getStringExtra("member_id");
+            member_name = getIntent().getStringExtra("member_name");
+            member_email = getIntent().getStringExtra("member_email");
+            member_phone = getIntent().getStringExtra("member_phone");
         }else{
             Toast.makeText(this,"No data",Toast.LENGTH_SHORT).show();
         }

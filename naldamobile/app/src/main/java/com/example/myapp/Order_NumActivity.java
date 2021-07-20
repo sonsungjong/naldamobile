@@ -25,10 +25,10 @@ import java.net.Socket;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Locale;
-
+// 결제완료 후 대기번호 안내 혹은 예약시간 안내 페이지
 public class Order_NumActivity extends AppCompatActivity {
 
-    public static Context mContext;
+//    public static Context mContext;
 
     Button goHome;
     String response;
@@ -48,7 +48,7 @@ public class Order_NumActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_order__num);
-        mContext = this;
+//        mContext = this;
         getData();
 
         goHome = (Button) findViewById(R.id.goHome);

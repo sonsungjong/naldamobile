@@ -5,12 +5,14 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.WindowManager;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.myapp.adapter.DetailAdapter;
 import com.example.myapp.model.DetailModel;
@@ -26,12 +28,12 @@ import java.util.ArrayList;
 
 public class DetailPageActivity extends AppCompatActivity {
 
-    private Handler mHandler;
+    public static Context mContext;
     RecyclerView detailRecycler;
     DetailAdapter detailAdapter;
     ArrayList<DetailModel> ditems;
     String uid;
-    String data_address, data_shop_name, data_shop_number, data_date, data_time, data_pay_no, data_classify, data_reserve_time,
+    String data_address, data_shop_name, data_shop_number, data_date_time, data_pay_no, data_classify, data_reserve_time,
             data_total_price, data_pay_price, data_pay_method, data_phone, data_msg;
     String data_pdt_name, data_type, data_shot, data_quantity, data_price;
 
@@ -43,8 +45,9 @@ public class DetailPageActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_detail_page);
+        mContext = this;
+        getData();
         ditems = new ArrayList<>();
-        mHandler = new Handler();
 
         Toolbar mToolbar = (Toolbar) findViewById(R.id.toolbar_id);
         d_shop_name = findViewById(R.id.shop_name);
@@ -112,12 +115,33 @@ public class DetailPageActivity extends AppCompatActivity {
 //            d_reserve_time = reserve_time(msg.substring(idx8+4, idx8+8));
 
 //        }
-        // 예약시간이 00:00으로 들어오면 빈값으로 반환, 값이 들어오면 괄호처리
-        public String reserve_time(String d_reserve_time){
-            if(d_reserve_time.equals("00:00")){
-                return "";
-            }
-            return "( "+d_reserve_time+" )";
+    // 예약시간이 00:00으로 들어오면 빈값으로 반환, 값이 들어오면 괄호처리
+    public String reserve_time(String d_reserve_time){
+        if(d_reserve_time.equals("00:00")){
+            return "";
         }
+        return "( "+d_reserve_time+" )";
+    }
+    // MS08 응답받음
+    public String requestDetailInfo(String read){
+        if(read.contains("STXMS0800")){
+            return read;
+        }
+        return "";
+    }
+    
+    
+    private void getData(){
+        if(getIntent().hasExtra("h_date_time")){
+            data_shop_name = getIntent().getStringExtra("h_shop_name");
+            // data_state = getIntent().getStringExtra("h_state");
+            data_date_time = getIntent().getStringExtra("h_date_time");
+            data_pay_no = getIntent().getStringExtra("h_pay_price");
+            data_classify = getIntent().getStringExtra("h_classify");
+            data_reserve_time = getIntent().getStringExtra("h_reserve_time");
 
+        }else{
+            Toast.makeText(this,"No data",Toast.LENGTH_SHORT).show();
+        }
+    }
 }

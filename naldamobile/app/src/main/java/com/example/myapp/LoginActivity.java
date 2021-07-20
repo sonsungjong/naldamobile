@@ -34,7 +34,7 @@ public class LoginActivity extends AppCompatActivity {
 
     TextView chatTV;
     public EditText ID;
-    String name, phone, email;
+    String member_name, member_email, member_phone;
     EditText Password;
     Button requestLogin;
     ImageView login_clogo;
@@ -75,15 +75,19 @@ public class LoginActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "비밀번호를 입력하세요", Toast.LENGTH_SHORT).show();
                 }
                 else{
+                    requestLogin.setEnabled(false);
                     IntroActivity.MsgThread mt = new IntroActivity.MsgThread("STX"+"MS02"+"00"+"02"+"D01="+ID.getText().toString()+"D02="+Password.getText().toString()+"ETX");
                     mt.start();
                     if(msg_flag == 1){
                         Toast.makeText(LoginActivity.this, "아이디가 일치하지 않습니다", Toast.LENGTH_SHORT).show();
+                        requestLogin.setEnabled(true);
                     }
                     else if(msg_flag == 2){
                         Toast.makeText(LoginActivity.this, "비밀번호가 일치하지 않습니다", Toast.LENGTH_SHORT).show();
+                        requestLogin.setEnabled(true);
                     }else if(msg_flag > 2){
                         Toast.makeText(LoginActivity.this, "서버와의 연결이 원활하지 않습니다", Toast.LENGTH_SHORT).show();
+                        requestLogin.setEnabled(true);
                     }
                 }
             }
@@ -103,11 +107,6 @@ public class LoginActivity extends AppCompatActivity {
                 }
             }
         });
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
     }
 
     public void signUpBtn(View view) {
@@ -136,18 +135,15 @@ public class LoginActivity extends AppCompatActivity {
 
     public void goShop(String read){
         if(read.contains("STXMS0200")){
-            // 서버 작업 후 풀기
-//            saveMemberInfo(read);
             chatTV.setText("로그인 중입니다");
+            saveMemberInfo(read);
             msg_flag = 0;
+            // 응답파싱
             Intent intent = new Intent(this, ShopActivity.class);
             intent.putExtra("member_id",ID.getText().toString());
-            // 서버 작업 후 풀기
-            /*
-            intent.putExtra("member_name",name);
-            intent.putExtra("member_email",email);
-            intent.putExtra("member_phone",phone);
-            */
+            intent.putExtra("member_name",member_name);
+            intent.putExtra("member_email",member_email);
+            intent.putExtra("member_phone",member_phone);
             startActivity(intent);
             finish();
         }
@@ -175,8 +171,8 @@ public class LoginActivity extends AppCompatActivity {
         int idxEmail = receive.indexOf("EMAIL=");
         int idxPhone = receive.indexOf("PHONE=");
         int idxEnd = receive.indexOf("ETX");
-        name = receive.substring(idxName+5, idxEmail);
-        email = receive.substring(idxEmail+6, idxPhone);
-        phone = receive.substring(idxPhone+6, idxEnd);
+        member_name = receive.substring(idxName+5, idxEmail);
+        member_email = receive.substring(idxEmail+6, idxPhone);
+        member_phone = receive.substring(idxPhone+6, idxEnd);
     }
 }

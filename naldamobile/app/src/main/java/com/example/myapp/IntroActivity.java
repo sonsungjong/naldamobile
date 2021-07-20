@@ -144,7 +144,7 @@ public class IntroActivity extends AppCompatActivity {
                 }
                 // 결제상세내역 요청
                 else if(read.contains("STXMS08") && sndMsg.contains("STXMS08")){
-                    ((HistoryActivity)HistoryActivity.mContext).requestDetailInfo(read);
+                    ((DetailPageActivity)DetailPageActivity.mContext).requestDetailInfo(read);
                 }
             }catch(Exception e){
                 e.printStackTrace();

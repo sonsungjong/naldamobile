@@ -2,10 +2,13 @@ package com.example.myapp.adapter;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -13,6 +16,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.myapp.DetailPageActivity;
 import com.example.myapp.ItemViewHolder;
 import com.example.myapp.LoadMore;
 import com.example.myapp.LoadingViewHolder;
@@ -80,7 +84,6 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryV
     @Override
     public void onBindViewHolder(@NonNull HistoryViewHolder holder, int position) {
 
-            HistoryModel item = items.get(position);
             holder.h_shop_name.setText(items.get(position).gethShopName());
             holder.h_state.setText(items.get(position).gethState());
             holder.h_date_time.setText(items.get(position).gethDateTime());
@@ -88,6 +91,20 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryV
             holder.h_pay_price.setText(items.get(position).gethPayPrice());
             holder.h_classify.setText(items.get(position).gethClassify());
             holder.h_reserve_time.setText(items.get(position).gethReserveTime());
+            holder.goDetail.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(context, DetailPageActivity.class);
+                    intent.putExtra("h_shop_name", items.get(position).gethShopName());
+                    intent.putExtra("h_state", items.get(position).gethState());
+                    intent.putExtra("h_date_time", items.get(position).gethDateTime());
+//                    intent.putExtra("h_pdt_name", items.get(position).gethPdtName());
+                    intent.putExtra("h_pay_price", items.get(position).gethPayPrice());
+                    intent.putExtra("h_classify", items.get(position).gethClassify());
+                    intent.putExtra("h_reserve_time", items.get(position).gethReserveTime());
+                    context.startActivity(intent);
+                }
+            });
 
     }
 
@@ -109,6 +126,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryV
         TextView h_pay_price;
         TextView h_classify;
         TextView h_reserve_time;
+        LinearLayout goDetail;
 
         public HistoryViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -119,6 +137,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryV
             h_pay_price = itemView.findViewById(R.id.h_pay_price);
             h_classify = itemView.findViewById(R.id.h_classify);
             h_reserve_time = itemView.findViewById(R.id.h_reserve_time);
+            goDetail = itemView.findViewById(R.id.go_detail);
         }
     }
 }

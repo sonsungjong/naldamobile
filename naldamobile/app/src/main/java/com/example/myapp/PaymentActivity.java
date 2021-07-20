@@ -1,14 +1,18 @@
 package com.example.myapp;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.os.Handler;
+import android.view.View;
 import android.view.WindowManager;
 import android.webkit.WebView;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,17 +41,18 @@ public class PaymentActivity extends AppCompatActivity {
     // 장바구니에서 직접처리하게 하기
     public static Context mContext;
     TextView chatTvPay;
+    Button closePayment;
     String menu_count, type1, shop_name, pdt_name1, pdtNameInfo, pdtInfo, cart_msg;
     String payNo = "", reserve_time = "";
-    int choice1, amount1, total_price, classify, menu_count_num;
+    int total_price, classify, menu_count_num;
     Calendar cal = new GregorianCalendar(Locale.KOREA);
-    int year = cal.get(Calendar.YEAR);
+    /*int year = cal.get(Calendar.YEAR);
     int month = cal.get(Calendar.MONTH)+1;
     int day = cal.get(Calendar.DAY_OF_MONTH);
     int hour = cal.get(Calendar.HOUR_OF_DAY);
     int min = cal.get(Calendar.MINUTE);
-    int sec = cal.get(Calendar.SECOND);
-    PayMethod payMethod = PayMethod.phone;
+    int sec = cal.get(Calendar.SECOND);*/
+    // PayMethod payMethod = PayMethod.phone;
     String pg = "html5_inicis";
 
     @Override
@@ -57,9 +62,11 @@ public class PaymentActivity extends AppCompatActivity {
         setContentView(R.layout.activity_payment);
         mContext = this;
         getData();
+
         menu_count_num = Integer.parseInt(menu_count);
         getPdtName(pdtInfo);
 
+        closePayment = (Button) findViewById(R.id.close_payment);
         chatTvPay = (TextView) findViewById(R.id.chatTv_pay);
         Iamport.INSTANCE.init(this);
 
@@ -68,20 +75,20 @@ public class PaymentActivity extends AppCompatActivity {
 //                html5_inicis: 이니시스웹표준, kakaopay: 카카오페이, chai: 차이페이
                 .pg(pg)
 //                PayMethod.card: 카드, .phone: 휴대폰소액결제, .samsung: 삼성페이, .vbank: 가상계좌
-                .pay_method(PayMethod.phone)
+                .pay_method(PayMethod.card)
 //                제품명
                 .name(pdtNameInfo)
 //                merchant_uid : 가맹점 관리 고유번호, 1970 년 1 월 1 일 00:00:00 GTM 이후의 밀리 초 수를 반환 (다른 형식으로 변경가능)
                 .merchant_uid("mid_" + (new Date()).getTime())
 //                가격
                 .amount(Integer.toString(total_price))
-                .buyer_tel("010-2580-2463")     // 로그인할때 서버로부터 번호 받아와서 아이디처럼 저장해놓아야함
-                .buyer_email("tbxmtbfm@naver.com")      // 로그인할때 서버로부터 이메일 받아와서 아이디처럼 저장
+                .buyer_tel("")     // 로그인할때 서버로부터 번호 받아와서 아이디처럼 저장해놓아야함
+                .buyer_email(ShopActivity.member_email)      // 로그인할때 서버로부터 이메일 받아와서 아이디처럼 저장
 //                .m_redirect_url("payment")
 //                .app_scheme("payment")
 //                디지털은 소액결제로 설정할 경우 필수항목: 컨텐츠인지 실물인지 여부제출 기본값 false
                 .digital(false)
-                .buyer_name("손성종").build(); // 로그인할때 서버로부터 이름받아와서 아이디처럼 저장해놓아야함
+                .buyer_name(ShopActivity.member_name).build(); // 로그인할때 서버로부터 이름받아와서 아이디처럼 저장해놓아야함
 
         Iamport.INSTANCE.payment("imp99137995", request,
                 iamPortApprove -> {
@@ -96,31 +103,25 @@ public class PaymentActivity extends AppCompatActivity {
 
                         IntroActivity.MsgThread mt = new IntroActivity.MsgThread(
                                 "STX"+"MS06"+"00"
-                                        +year+"-"+month(month)+"-"+day(day)
-                                        +hour(hour)+":"+min(min)+":"+sec(sec)
+                                        +cal.get(Calendar.YEAR)+"-"+month(cal.get(Calendar.MONTH)+1)+"-"+day(cal.get(Calendar.DAY_OF_MONTH))
+                                        +hour(cal.get(Calendar.HOUR_OF_DAY))+":"+min(cal.get(Calendar.MINUTE))+":"+sec(cal.get(Calendar.SECOND))
                                         +"ID="+ShopActivity.member_id
                                         +"SHOP="+shop_name
                                         +"COUNT="+menu_count
                                         +pdtInfo
                                         +"PRICE="+final_string_total_price(total_price)
+                                        +"MSG="+cart_msg
                                         +"PAYNO="+payNo
+                                        +"H01="+ShopActivity.member_name
+                                        +"H02="+ShopActivity.member_phone
                                         +"CLS="+classify
-                                        +"MSG="+reserve_time
+                                        +"ETC="+reserve_time
                                         +"ETX"
                         );
                         mt.start();
-                        /*intent.putExtra("shop_name",shop_name);
-                        intent.putExtra("menu_count",menu_count);
-                        intent.putExtra("pdt_name",pdt_name);
-                        intent.putExtra("type",type);
-                        intent.putExtra("choice",choice);
-                        intent.putExtra("amount",amount);
-                        intent.putExtra("payNo",payNo);
-                        intent.putExtra("total_price",total_price);
-                        intent.putExtra("classify",classify);
-                        intent.putExtra("reserve_time", reserve_time);*/
                     }else if(iamPortResponse.getImp_success() == false){
 //                        결제 취소시 취소한 화면 생성 + 뒤로가는 버튼
+                        btnClosePayment(closePayment);
                     }
                     return Unit.INSTANCE;
                 });
@@ -141,11 +142,6 @@ public class PaymentActivity extends AppCompatActivity {
             reserve_time = getIntent().getStringExtra("reserve_time");
             cart_msg = getIntent().getStringExtra("cart_msg");
             classify = getIntent().getIntExtra("classify",1);
-
-            /*pdt_name = getIntent().getStringExtra("pdt_name");
-            type = getIntent().getStringExtra("type");
-            choice = getIntent().getIntExtra("choice",0);
-            amount = getIntent().getIntExtra("amount",10);*/
         }else{
             Toast.makeText(this,"No data",Toast.LENGTH_SHORT).show();
         }
@@ -160,6 +156,10 @@ public class PaymentActivity extends AppCompatActivity {
         }else {
             pdtNameInfo = pdtInfo.substring(idxD01 + 4, idxD02) + " 외 " + (menu_count_num - 1) + "건";
         }
+    }
+
+    public void btnClosePayment(View v){
+        finish();
     }
 
     private String final_string_total_price(int total_price) {

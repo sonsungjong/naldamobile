@@ -19,7 +19,7 @@ import android.widget.Toast;
 public class SignUpActivity extends AppCompatActivity {
 
     public static Context mContext;
-    private Handler mHandler;
+//    private Handler mHandler;
 
     EditText fullName;
     EditText password;
@@ -45,7 +45,7 @@ public class SignUpActivity extends AppCompatActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_sign_up);
         mContext = this;
-        mHandler = new Handler();
+//        mHandler = new Handler();
 
         fullName = (EditText) findViewById(R.id.fullName);
         password = (EditText) findViewById(R.id.password);
@@ -172,6 +172,7 @@ public class SignUpActivity extends AppCompatActivity {
                             | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
         }
     }
+
     public void signUpServer(String read){
         if(read.contains("STXMS0100")){
             msg_flag = 0;

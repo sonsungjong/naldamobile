@@ -237,11 +237,11 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <LinearLayout
+        android:id="@+id/go_detail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="92dp"
-        android:background="@drawable/detail_bg"
-        android:onClick="detail">
+        android:background="@drawable/detail_bg">
 
         <TextView
             android:layout_width="match_parent"
